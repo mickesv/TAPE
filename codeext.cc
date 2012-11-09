@@ -58,6 +58,7 @@ void startParsing(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
  * - Have another go at StringStuff
  * - Save to modelFile
  * - Proper help output
+ * - Document how to create a new parser (=inherit from Parser, add to getParsers, add to config file, usage of ParserData*)
  */
 
 int main(int argc, char* argv[])
