@@ -50,6 +50,19 @@ void Model::populate(string theFileName)
   }  
 }
 
+void Model::save(string theFileName)
+{
+  CSVFile myFile;
+  myFile.setName(theFileName);
+  
+
+  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++) {
+    myFile.writeLine((*i)->toString(myFile.sep(), myFile.subsep()));
+  }
+
+}
+
+
 
 void Model::add(ModelNode* theNode)
 {
@@ -141,19 +154,16 @@ bool ModelNode::operator<(const ModelNode &theNode) const
   return false;
 }
 
-string ModelNode::toString()
+string ModelNode::toString(const char sep, const char subsep)
 {
-  char sep=';';
   stringstream s;
   s << type << sep << source << sep << target << sep;
-  bool first=true;
 
-  for(map<string, string>::iterator i=args.begin(); i!=args.end(); i++) {
-    if (first!=true) {
-      s << ",";
-    }
-    first=false;
+  for(map<string, string>::iterator i=args.begin(); i!=args.end();) {
     s << (*i).first << "=" << (*i).second;
+    if (++i!=args.end()) {
+      s << subsep;
+    }
   }
 
   return s.str();

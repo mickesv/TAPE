@@ -67,7 +67,31 @@ void Config::parseArgs(int argc, char* argv[])
     string s=argv[argc-1];
 
     if (s=="-help") {
-      cout << "help" << endl;
+      cout << "Displaying help text..." << endl;
+      cout << "\nUsage: " << argv[0] << "[options] [key]=[value]" << endl;
+      cout << "\nOptions:" << endl;
+      cout << "  -help           Displays this information" << endl;
+      cout << "  [key]=[value]   Sets the value of [key] to [value]" << endl;
+      cout << "\nBasic keys include:" << endl;
+      cout << "  debugLevel      An int specifying the amount of" << endl;
+      cout << "                  debug info to print. Default=1" << endl;
+      cout << "  cfgFile         The name of the configuration file. Default=config.cfg" << endl;
+      cout << "  read            if true, start by reading the modelFile. Default=false" << endl;
+      cout << "  save            if true, save the modelFile once done. Default=true" << endl;
+      cout << "\nConfiguration file:" << endl;
+      cout << " The configuration file is constructed in the same" << endl;
+      cout << " way using [key]=[value] pairs." << endl;
+      cout << "\n In addition to the keys above, the following ought to be used:" << endl;
+      cout << "  projectName     The name of the project" << endl;
+      cout << "  modelFile       Filename of the produced/used model" << endl;
+      cout << "  basePath        The base path of the source code for the project" << endl;
+      cout << "  file            One file in the project" << endl;
+      cout << "                  (this key can be used repeatedly)" << endl;
+      cout << "  parsers         Parsers to use for extracting information" << endl;
+      cout << "                  from the source files." << endl;
+      cout << "                  Basic parsers include: functionCalls, loopDepth, functionSize" << endl;
+      cout << "------------------------------" << endl;
+      cout << "Resuming..." << endl;
     } else 
 
       {
@@ -96,27 +120,53 @@ void Config::readFile(string theFileName)
   int lineNum=0;
 
   if(in.is_open()) {
-    char theLine[256];;
+    char theLine[512];;
     while(!in.eof()){
-      in.getline(theLine, 256);
+      in.getline(theLine, 512);
       lineNum++;
+      if (((string) theLine).size()==0) {
+	continue;
+      }
+
       string s=StringStuff::lrtrim((string) theLine);
 
-      if (s[0]!='/' && s[1]!='/') { // not a comment
+      int comment=s.find("//"); // Deal with comments
+      if (comment !=string::npos) {
+	s=s.substr(0, comment);
+      }
+
+      if (s.size()!=0) {
 
 	vector<string> myArg=StringStuff::strSplit(s,'=');
 
-	if (myArg.size()==2) {	
-	  if (StringStuff::lrtrim(myArg[0]) == "file") { // handle files separately
-	    myFiles.push_back(StringStuff::lrtrim(myArg[1]));
-	  } else {
-	    myValues[StringStuff::lrtrim(myArg[0])]=StringStuff::lrtrim(myArg[1]);
-	  }
-
-	} else {
+	// Sanity checks
+	if(myArg.size()<2) {
 	  stringstream ss;
-	  ss << "--> Invalid configuration directive on line: " << lineNum;	  
+	  ss << "--> Invalid configuration directive on line: " << lineNum;
+	  Debug::print(1, ss.str());	  
+	} else if (myArg.size()>2) {
+	  stringstream ss;
+	  ss << "--> Possibly Invalid configuration directive on line: " << lineNum
+	     << "\n    Trying to recover...";
 	  Debug::print(1, ss.str());
+	  
+	  string theString=myArg[1];
+	  for(int i=2; i<myArg.size(); i++) {
+	    theString+="=";
+	    theString+=myArg[i];
+	  }
+	  myArg[1]=theString;
+	  Debug::print(10, (string) "Recovered argument is: " + myArg[0] + "=" + myArg[1]);
+	}
+
+	// Add stuff to my config.
+	if (StringStuff::lrtrim(myArg[0]) == "file") { // handle files separately
+	  myFiles.push_back(StringStuff::lrtrim(myArg[1]));
+	} else {
+	  // First, make sure that the value does not already exist
+	  if (get(StringStuff::lrtrim(myArg[0]))=="") {
+	      myValues[StringStuff::lrtrim(myArg[0])]=StringStuff::lrtrim(myArg[1]);
+	    }
 	}
 
       }

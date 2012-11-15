@@ -16,10 +16,15 @@ all: codeext
 
 go: codeext
 	LD_LIBRARY_PATH=$(CLANGLIB) ./codeext read=false
+	@echo "Final Model:"
+	@cat msvtest.csv
+	@echo "----------"
 
 gawk: codeext
 	LD_LIBRARY_PATH=$(CLANGLIB) ./codeext cfgFile=gawk.cfg read=false
-
+	@echo "Final Model:"
+	@cat gawk.csv
+	@echo "----------"
 
 clean:
 	rm *.o

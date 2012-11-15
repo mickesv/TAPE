@@ -17,6 +17,7 @@ public:
 
 private:
   static string getFilename(const CXCursor &c);  
+  int getClangArgs(char** &cArgs);
 
   static CXChildVisitResult declarationsVisitor(CXCursor theCursor, CXCursor theParent, CXClientData data);
   static CXChildVisitResult functionVisitor(CXCursor theCursor, CXCursor theParent, CXClientData data);

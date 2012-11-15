@@ -25,7 +25,7 @@ public:
   string getArg(const string &theArgName);
   void setArg(const string &theArgName, const string &theValue);
 
-  string toString();
+  string toString(const char sep=';', const char subsep=',');
 protected:
   void parseArgs(map<string, string> &argList, const string &theArgs);
 };
@@ -39,6 +39,7 @@ public:
   ~Model();
   
   void populate(string theFileName);
+  void save(string theFileName);
 
   void add(ModelNode* theNode);
   set<ModelNode*> get(const int theSource);

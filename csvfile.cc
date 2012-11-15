@@ -13,6 +13,7 @@ CSVFile::CSVFile()
 
 CSVFile::~CSVFile()
 {
+  close();
 }
 
 void CSVFile::setName(string theFileName)
@@ -38,8 +39,23 @@ bool CSVFile::getLine(vector<string> &theLine)
     myFile.getline(myLine, 512);
     string s=(string) myLine;
     if (s!="") {
-      theLine=StringStuff::strSplit(s, ';');
+      theLine=StringStuff::strSplit(s, sep());
     }
     return false;
   }
+}
+
+bool CSVFile::writeLine(string theLine)
+{
+  if(!myFile.is_open()) {
+    myFile.open(myFileName.c_str(), ios::out);    
+  }
+  if (!myFile.is_open()) {
+    return true;
+  } else {
+    myFile << theLine << endl;
+  }
+
+  
+  return true;
 }

@@ -6,17 +6,23 @@
 #include "config.hh"
 #include "debug.hh"
 
-char *clangargs[]={""};
 
 void Extractor::extractDeclarations(FileNode* theNode)
 {
   CXIndex myIdx = clang_createIndex(1,1);
   string myFullName = theNode->getArg("basePath") + theNode->getArg("name");  
 
-  Debug::print(2, (string) "Extracting declarations from " + myFullName);
+  char** clangargs;
+  int clangargc=getClangArgs(clangargs);
+
+
+  Debug::print(2, (string) " Extracting declarations from " + theNode->getArg("name"));
   CXTranslationUnit myTU = clang_createTranslationUnitFromSourceFile( myIdx, myFullName.c_str(), 
-								      sizeof(clangargs)/sizeof(char*), clangargs, 0, 0);
-  if (myTU==NULL) return;
+								      clangargc, clangargs, 0, 0);
+  if (myTU==NULL) {
+    Debug::print(1, "--> Error when extracting declarations.\n    Best guess is to check the clangArgs parameter.");
+    return;
+  }
 
   myParserData=new ParserData(theNode);
   clang_visitChildren(clang_getTranslationUnitCursor(myTU), declarationsVisitor, this);
@@ -116,4 +122,44 @@ string Extractor::getFilename(const CXCursor &c)
   if(file==NULL)
     return "unknownfile";
   return clang_getCString( clang_getFileName(file) );
+}
+
+int Extractor::getClangArgs(char** &cArgs)
+{
+  vector<string> sArgs=myConfig.getList("clangArgs");
+
+  if(sArgs.size()==0) {
+    cArgs=new char*[1];
+    return 0;
+  }
+
+  cArgs=new char*[sArgs.size()];
+
+  // How much space do I need?
+  int size=0;
+  for(vector<string>::iterator i=sArgs.begin(); i!=sArgs.end();i++) {
+    size+=(*i).size();
+    size++; // to accomodate the null termination
+  }
+  
+  char* theArgs=new char[size];
+
+  // Populate it
+  int count=0;
+  int pos=0;
+  for(vector<string>::iterator i=sArgs.begin(); i!=sArgs.end();i++) {
+    cArgs[count++]=theArgs+pos;
+    strcpy(theArgs+pos, (*i).c_str());
+    pos+=(*i).size()+1;
+  }
+
+  // Old version
+  /*  for(vector<string>::iterator i=sArgs.begin(); i!=sArgs.end();i++) {
+    cArgs[count]=new char[(*i).size()];
+    strcpy(cArgs[count], (*i).c_str());
+    count++;
+    }*/
+  
+
+  return sArgs.size();
 }
