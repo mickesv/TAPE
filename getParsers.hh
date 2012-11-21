@@ -11,6 +11,7 @@
 #include "functioncallparser.hh"
 #include "loopdepthparser.hh"
 #include "functionsizeparser.hh"
+#include "gvaccessparser.hh"
 
 using namespace std;
 
@@ -39,6 +40,12 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
       Debug::print(2, " Loading FunctionSizeParser");
       theParsers.insert(new FunctionSizeParser());
     }
+
+    if((*i)=="globalVariableAccess") {
+      Debug::print(2, " Loading GlobalVariableAccessParser");
+      theParsers.insert(new GVAccessParser());
+    }
+
 
   }    
 }

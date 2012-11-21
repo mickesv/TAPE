@@ -19,6 +19,7 @@ public:
   }
 
   virtual void setId(const int &theId) { }; // Do not need any id.  
+  CXCursor* getCursor() { return &myCursor; };
 
 private:
   CXCursor myCursor;

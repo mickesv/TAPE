@@ -44,7 +44,9 @@ public:
   void add(ModelNode* theNode);
   set<ModelNode*> get(const int theSource);
   set<ModelNode*> get(const string &theType);
+  set<ModelNode*> get(const string &theType, const int theSource);
   set<ModelNode*> get(const string &theType, const string &theName);
+  set<ModelNode*> get(const string &theType, const int theSource, const string &theName);
   
   void debugPrint(int theLevel);
 private:

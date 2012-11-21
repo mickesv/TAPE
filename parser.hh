@@ -2,7 +2,9 @@
 #define PARSER_HH
 
 #include <clang-c/Index.h>
-#include <set>
+#include <map>
+#include <stack>
+#include <string>
 
 #include "model.hh"
 #include "config.hh"
@@ -35,14 +37,19 @@ public:
   Parser() {};
   
 
-  virtual void startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData) { myModelPtr=&theModel; };
-  virtual void endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData) { myModelPtr=&theModel; };
+  virtual void startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
+  virtual void endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
   virtual CXChildVisitResult parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData* theData);
  
 protected:
   Model* myModelPtr;
 
+  bool ascend(const CXCursor &theCursor, ParserData* theData);
+  bool descend(const CXCursor &theCursor, ParserData* theData);
+  bool isWithinCurrentCompound(const CXCursor &theCursor);
+
 private:
+  stack<CXSourceLocation> myCSEnds;
 };
 
 

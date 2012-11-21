@@ -61,11 +61,11 @@ void startParsing(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
 int main(int argc, char* argv[])
 {
   // Generic start for the entire family of tools
-  Debug::print(1, "----------------------------------------");
-  Debug::print(1, (string) "Starting " + argv[0]);
   Config myConfig(argc, argv);
   Model myModel(myConfig);
   Debug::setLevel(myConfig.getInt("debugLevel"));
+  Debug::print(1, "----------------------------------------");
+  Debug::print(1, (string) "Starting " + argv[0]);
   myConfig.debugPrint(100);
 
   // Start of tool-specific stuff

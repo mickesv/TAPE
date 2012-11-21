@@ -76,7 +76,7 @@ void Config::parseArgs(int argc, char* argv[])
       cout << "  debugLevel      An int specifying the amount of" << endl;
       cout << "                  debug info to print. Default=1" << endl;
       cout << "  cfgFile         The name of the configuration file. Default=config.cfg" << endl;
-      cout << "  read            if true, start by reading the modelFile. Default=false" << endl;
+      //      cout << "  read            if true, start by reading the modelFile." << endl;
       cout << "  save            if true, save the modelFile once done. Default=true" << endl;
       cout << "\nConfiguration file:" << endl;
       cout << " The configuration file is constructed in the same" << endl;

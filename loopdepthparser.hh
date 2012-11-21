@@ -12,10 +12,9 @@ public:
   virtual void endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
   virtual CXChildVisitResult parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData* theData);
 
-private:
-  bool isWithinCurrentCompound(CXSourceLocation theLocation);
+protected:
 
-  stack<CXSourceLocation> myCSEnds;  
+private:
 };
 
 

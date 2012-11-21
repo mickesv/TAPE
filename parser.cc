@@ -4,6 +4,18 @@
 
 #include "parser.hh"
 
+void Parser::startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+{
+  myModelPtr=&theModel;
+  theData->set("compoundDepth", 0);
+}
+
+void Parser::endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+{
+  myModelPtr=&theModel;
+}
+
+
 CXChildVisitResult Parser::parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData* theData)
 {
   // Give a decent default return behaviour that can be overridden by subclasses
@@ -48,6 +60,59 @@ CXChildVisitResult Parser::parse(const CXCursor &theCursor, const CXCursor &theP
     }
     
     return CXChildVisit_Recurse;
+}
+
+
+bool Parser::ascend(const CXCursor &theCursor, ParserData* theData)
+{
+  if(!isWithinCurrentCompound(theCursor)) {
+    myCSEnds.pop();
+    if (theData->get("compoundDepth") != 0) {
+      theData->add("compoundDepth", -1);
+    }
+    return true;
+  }
+  return false;
+}
+
+bool Parser::descend(const CXCursor &theCursor, ParserData* theData)
+{
+  CXSourceRange theRange=clang_getCursorExtent(theCursor);
+  myCSEnds.push(clang_getRangeEnd(theRange));
+  theData->add("compoundDepth", 1);
+}
+
+
+bool Parser::isWithinCurrentCompound(const CXCursor &theCursor)
+{
+  CXSourceLocation theLocation=clang_getCursorLocation(theCursor);
+
+  if(myCSEnds.empty()) {
+    // Top scope, I guess we are always within this.
+    return true;
+  }
+
+  unsigned* theEndLine=new unsigned();
+  unsigned* theEndCol=new unsigned();
+  unsigned* theLocLine=new unsigned();
+  unsigned* theLocCol=new unsigned();
+
+  clang_getPresumedLocation(myCSEnds.top(), NULL, theEndLine, theEndCol);
+  clang_getPresumedLocation(theLocation, NULL, theLocLine, theLocCol);
+  
+  if (*theLocLine==*theEndLine) {
+    if (*theLocCol < *theEndCol) {
+      return true;
+    } else {
+      return false;
+    }
+  } else if (*theLocLine < *theEndLine) {
+    return true;
+  }
+
+  // Default: I am no longer within the compound statement
+  return false;
+    
 }
 
 

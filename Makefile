@@ -2,7 +2,7 @@ CLANGLIB=/opt/local/libexec/llvm-3.1/lib
 CLANGINC=/opt/local/libexec/llvm-3.1/include
 CFLAGS=-g -L$(CLANGLIB) -I$(CLANGINC)
 CC=g++
-PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o
+PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o
 CEOBJECTS=codeext.o config.o stringstuff.o model.o csvfile.o debug.o extractor.o $(PARSERS)
 
 %.o: %.cc *.hh

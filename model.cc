@@ -87,6 +87,22 @@ set<ModelNode*> Model::get(const int theSource)
   return myRetSet;
 }
 
+set<ModelNode*> Model::get(const string &theType, const int theSource)
+{
+  set<ModelNode*> myRetSet;
+
+  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
+    {
+      if ((*i)->type==theType && 
+	  (*i)->source==theSource) {
+	myRetSet.insert(*i);
+      }
+    }
+
+  return myRetSet;
+}
+
+
 set<ModelNode*> Model::get(const string &theType)
 {
   set<ModelNode*> myRetSet;
@@ -108,6 +124,22 @@ set<ModelNode*> Model::get(const string &theType, const string &theName)
   for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
     {
       if ((*i)->type==theType && (*i)->getArg("name")==theName){
+	myRetSet.insert(*i);
+      }
+    }
+
+  return myRetSet;
+}
+
+set<ModelNode*> Model::get(const string &theType, const int theSource, const string &theName)
+{
+  set<ModelNode*> myRetSet;
+
+  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
+    {
+      if ((*i)->type==theType && 
+	  (*i)->source==theSource &&
+	  (*i)->getArg("name")==theName){
 	myRetSet.insert(*i);
       }
     }
