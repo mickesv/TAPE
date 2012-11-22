@@ -7,7 +7,7 @@
 void Parser::startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
 {
   myModelPtr=&theModel;
-  theData->set("compoundDepth", 0);
+  myCompoundDepth=0;
 }
 
 void Parser::endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
@@ -63,23 +63,28 @@ CXChildVisitResult Parser::parse(const CXCursor &theCursor, const CXCursor &theP
 }
 
 
-bool Parser::ascend(const CXCursor &theCursor, ParserData* theData)
+bool Parser::ascendCompound(const CXCursor &theCursor, ParserData* theData)
 {
   if(!isWithinCurrentCompound(theCursor)) {
     myCSEnds.pop();
-    if (theData->get("compoundDepth") != 0) {
-      theData->add("compoundDepth", -1);
+    if (myCompoundDepth != 0) {
+      myCompoundDepth--;
     }
     return true;
   }
   return false;
 }
 
-bool Parser::descend(const CXCursor &theCursor, ParserData* theData)
+bool Parser::descendCompound(const CXCursor &theCursor, ParserData* theData)
 {
   CXSourceRange theRange=clang_getCursorExtent(theCursor);
   myCSEnds.push(clang_getRangeEnd(theRange));
-  theData->add("compoundDepth", 1);
+  myCompoundDepth++;
+}
+
+int Parser::getCompoundDepth()
+{
+  return myCompoundDepth;
 }
 
 

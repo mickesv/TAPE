@@ -44,12 +44,14 @@ public:
 protected:
   Model* myModelPtr;
 
-  bool ascend(const CXCursor &theCursor, ParserData* theData);
-  bool descend(const CXCursor &theCursor, ParserData* theData);
+  bool ascendCompound(const CXCursor &theCursor, ParserData* theData);
+  bool descendCompound(const CXCursor &theCursor, ParserData* theData);
+  int getCompoundDepth(void);
   bool isWithinCurrentCompound(const CXCursor &theCursor);
 
 private:
   stack<CXSourceLocation> myCSEnds;
+  int myCompoundDepth;
 };
 
 

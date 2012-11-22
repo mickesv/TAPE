@@ -18,7 +18,7 @@ void LoopdepthParser::endFunction(Model &theModel, FunctionNode* theFunction, Pa
 
 CXChildVisitResult LoopdepthParser::parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData* theData)
 {
-  while (ascend(theCursor, theData)) {
+  while (ascendCompound(theCursor, theData)) {
     theData->add("maxLoopDepth", -1);
   }
 
@@ -29,7 +29,7 @@ CXChildVisitResult LoopdepthParser::parse(const CXCursor &theCursor, const CXCur
       // TODO: If a callExpr is used in the initialisation-part of a for loop, it should not have increased loopDepth.
     case CXCursor_WhileStmt :
       {
-	descend(theCursor, theData);
+	descendCompound(theCursor, theData);
 	theData->add("maxLoopDepth", 1);
 	break;
       }

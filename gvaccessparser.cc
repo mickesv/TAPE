@@ -94,7 +94,7 @@ CXChildVisitResult GVAccessParser::parse(const CXCursor &theCursor, const CXCurs
   bool asc=false;
   int myDepth=0;
 
-  while (ascend(theCursor, theData)) {
+  while (ascendCompound(theCursor, theData)) {
     asc=true;
   }
 
@@ -123,7 +123,7 @@ CXChildVisitResult GVAccessParser::parse(const CXCursor &theCursor, const CXCurs
 
 	if (myVariables.find(myName)!=myVariables.end()) {
 	  Debug::print(100, (string) "    Overriding Global Variable Name " + myName);
-	  myVariables[myName]->depth.push(theData->get("compoundDepth"));
+	  myVariables[myName]->depth.push(getCompoundDepth());
 	}
 	retval=CXChildVisit_Recurse;
 	break;
@@ -177,7 +177,7 @@ CXChildVisitResult GVAccessParser::parse(const CXCursor &theCursor, const CXCurs
     case CXCursor_StmtExpr :
       {
 	// Descend
-	descend(theCursor, theData);
+	descendCompound(theCursor, theData);
 	myDepth++;
 	retval=CXChildVisit_Recurse;
 	break;
