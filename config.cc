@@ -22,6 +22,11 @@ Config::Config()
 Config::Config(int argc, char* argv[])
 {
   parseArgs(argc, argv);
+  int dl=getInt("debugLevel");
+  if (dl==-1) {
+    dl=1;
+  }
+  Debug::setLevel(dl);
   readFile(get("cfgFile"));  
 }
 
@@ -45,18 +50,18 @@ int Config::getInt(const string &theKey)
 }
 
 
-vector<string> Config::getList(const string &theKey)
+void Config::getList(vector<string> &theList, const string &theKey)
 {
+  // TODO: Make this pass by reference instead
   if (theKey=="file") {
-    return myFiles;
+    theList=myFiles;
   }
 
   string s = myValues[theKey];
+    
   if (s=="") {
-    vector<string> l;
-    return l;
   } else {
-    return StringStuff::strSplit(s, ',');
+    StringStuff::strSplit(theList, s, ',');
   }
 }
 
@@ -96,7 +101,8 @@ void Config::parseArgs(int argc, char* argv[])
 
       {
 	// default:
-	vector<string> myArg=StringStuff::strSplit(s,'=');
+	vector<string> myArg;
+	StringStuff::strSplit(myArg,s,'=');
 	myValues[StringStuff::lrtrim(myArg[0])]=StringStuff::lrtrim(myArg[1]);
       }
 
@@ -113,9 +119,8 @@ void Config::parseArgs(int argc, char* argv[])
 void Config::readFile(string theFileName)
 {
   ifstream in;
-
   in.open(theFileName.c_str(), ios::in);
-  Debug::print(1, "Reading configuration file: " + theFileName);
+  Debug::print(10, "Reading configuration file: " + theFileName);
   
   int lineNum=0;
 
@@ -137,7 +142,8 @@ void Config::readFile(string theFileName)
 
       if (s.size()!=0) {
 
-	vector<string> myArg=StringStuff::strSplit(s,'=');
+	vector<string> myArg;
+	StringStuff::strSplit(myArg, s,'=');
 
 	// Sanity checks
 	if(myArg.size()<2) {

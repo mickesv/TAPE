@@ -126,7 +126,8 @@ string Extractor::getFilename(const CXCursor &c)
 
 int Extractor::getClangArgs(char** &cArgs)
 {
-  vector<string> sArgs=myConfig.getList("clangArgs");
+  vector<string> sArgs;
+  myConfig.getList(sArgs, "clangArgs");
 
   if(sArgs.size()==0) {
     cArgs=new char*[1];

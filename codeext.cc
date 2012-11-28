@@ -17,13 +17,17 @@ void addBasics(Model &theModel, Config &theConfig)
 {  
   ProjectNode* pn=new ProjectNode(theConfig.get("projectName"));
 
-  if (theModel.get(pn->type).size() == 0) { // Not previously defined
+  set<ModelNode*>* theNodes=theModel.getNodes();
+  theModel.filterByType(*theNodes, pn->type);  
+
+  if (theNodes->size() == 0) { // Not previously defined
     theModel.add(pn);
 
     // Then, we can assume that the files are not previously added either
     FileNode* fn;
     string bp=theConfig.get("basePath");
-    vector<string> files=theConfig.getList("file");
+    vector<string> files;
+    theConfig.getList(files, "file");
     for (vector<string>::iterator i=files.begin(); i!=files.end(); i++) {
       fn=new FileNode(bp, *i, pn->target);
       theModel.add(fn);
@@ -33,28 +37,30 @@ void addBasics(Model &theModel, Config &theConfig)
 
 void addDeclarations(Model &theModel, Config &theConfig)
 {
-  set<ModelNode*> theFiles=theModel.get("ProjectHasFile");
+  set<ModelNode*>* theFiles=theModel.getNodes();
+  theModel.filterByType(*theFiles, "ProjectHasFile");
   Extractor e(theModel, theConfig);
 
-  for(set<ModelNode*>::iterator i=theFiles.begin(); i!=theFiles.end(); i++) {
+  for(set<ModelNode*>::iterator i=theFiles->begin(); i!=theFiles->end(); i++) {
     e.extractDeclarations((FileNode*) (*i));
   }
 }
 
 void startParsing(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
 {
-  set<ModelNode*> theFunctions=theModel.get("FileDeclaresFunction");
+  set<ModelNode*>* theFunctions=theModel.getNodes();
+  theModel.filterByType(*theFunctions,"FileDeclaresFunction");
   Extractor e(theModel, theConfig);
 
-  for(set<ModelNode*>::iterator i=theFunctions.begin(); i!=theFunctions.end(); i++) {
+  for(set<ModelNode*>::iterator i=theFunctions->begin(); i!=theFunctions->end(); i++) {
     e.parseFunction(theParsers, (FunctionNode*) (*i));
   }  
 }
 
 /* TODO
  * - Add linkage to functioncalls
- * - GlobalVariableAccessParser
  * - Have another go at StringStuff
+ * - !!! Fix stack/heap usage everywhere... I've become Java-sloppy...
  * - Document how to create a new parser (=inherit from Parser, add to getParsers, add to config file, usage of ParserData*)
  */
 

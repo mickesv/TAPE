@@ -4,6 +4,7 @@
 
 #include "csvfile.hh"
 #include "stringstuff.hh"
+#include "debug.hh"
 
 using namespace std;
 
@@ -32,16 +33,22 @@ bool CSVFile::getLine(vector<string> &theLine)
     myFile.open(myFileName.c_str(), ios::in);    
   }
 
+  theLine.clear();
+
   if (!myFile.is_open() || myFile.eof()) {
     return true;
   } else {
     char myLine[512];
     myFile.getline(myLine, 512);
-    string s=(string) myLine;
-    if (s!="") {
-      theLine=StringStuff::strSplit(s, sep());
+    bool eof=true;
+    if (!(myFile.rdstate() & ifstream::goodbit)) {
+      eof=false;
     }
-    return false;
+    string s=(string) myLine;
+    if (s!="" || !eof) {
+      StringStuff::strSplit(theLine, s, sep());
+    } 
+    return eof;
   }
 }
 

@@ -28,9 +28,11 @@ void GVAccessParser::startFunction(Model &theModel, FunctionNode* theFunction, P
   myUsages.clear();
 
   // Get all Global Variables in this file and move over to my temporary structure.
-  set<ModelNode*> myGV = theModel.get("FileDeclaresVariable", theFunction->source);  
+  set<ModelNode*>* myGV = theModel.getNodes();
+  theModel.filterByType(*myGV,"FileDeclaresVariable");
+  theModel.filterBySource(*myGV, theFunction->source);  
   VarDecl* vd;
-  for(set<ModelNode*>::iterator i=myGV.begin(); i!=myGV.end(); i++) {
+  for(set<ModelNode*>::iterator i=myGV->begin(); i!=myGV->end(); i++) {
     vd=new VarDecl();
     vd->varName=(*i)->getArg("name");
     vd->id=(*i)->target;
@@ -133,8 +135,11 @@ CXChildVisitResult GVAccessParser::parse(const CXCursor &theCursor, const CXCurs
 	retval=CXChildVisit_Recurse;
 	  
 	// Make sure I am not referring to a function
-	set<ModelNode*> nodes=myModelPtr->get("FileDeclaresFunction", theData->getNode()->source, myName);
-	if (nodes.size()!=0) {
+	set<ModelNode*>* nodes=myModelPtr->getNodes();
+	myModelPtr->filterByType(*nodes,"FileDeclaresFunction");
+	myModelPtr->filterBySource(*nodes, theData->getNode()->source);
+	myModelPtr->filterByArg(*nodes, "name", myName);
+	if (nodes->size()!=0) {
 	  // There is a function by this name, so I am going to assume (not entirely pukkah) that we are in fact dealing with a function call and abort.
 	  break;
 	}

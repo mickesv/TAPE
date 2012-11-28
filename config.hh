@@ -27,7 +27,7 @@ public:
   
   string get(const string &theKey);
   int getInt(const string &theKey);
-  vector<string> getList(const string &theKey);
+  void getList(vector<string> &theList, const string &theKey);
 
   void debugPrint(const int theLevel);
 private:

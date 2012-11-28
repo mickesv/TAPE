@@ -17,7 +17,7 @@ public:
 
   ModelNode();
   ModelNode(const string &theType, const int &theSource, const int &theTarget, const string &theArgs="");
-
+  ~ModelNode();
   bool operator<(const ModelNode &theNode) const;
 
   virtual void setId(const int &theId) { target=theId;};
@@ -26,8 +26,11 @@ public:
   void setArg(const string &theArgName, const string &theValue);
 
   string toString(const char sep=';', const char subsep=',');
+
 protected:
   void parseArgs(map<string, string> &argList, const string &theArgs);
+
+private:
 };
 
 
@@ -42,14 +45,20 @@ public:
   void save(string theFileName);
 
   void add(ModelNode* theNode);
-  set<ModelNode*> get(const int theSource);
-  set<ModelNode*> get(const string &theType);
-  set<ModelNode*> get(const string &theType, const int theSource);
-  set<ModelNode*> get(const string &theType, const string &theName);
-  set<ModelNode*> get(const string &theType, const int theSource, const string &theName);
+
+  set<ModelNode*>* getNodes() const;
+  void filterBySource(set<ModelNode*> &theNodes, const int theSource) const;
+  void filterByTarget(set<ModelNode*> &theNodes, const int theTarget) const;
+  void filterByType(set<ModelNode*> &theNodes, const string &theType) const;
+  void filterByArg(set<ModelNode*> &theNodes, const string &theArgName, const string &theArg) const;
+
+  int getInDegrees(const set<ModelNode*> &theArches, const int theNode) const;
+  int getOutDegrees(const set<ModelNode*> &theArches, const int theNode) const;
+
   
   void debugPrint(int theLevel);
 private:
+
   Config* myConfig;
   set<ModelNode*> myNodes;
 

@@ -3,28 +3,27 @@
 #include "stringstuff.hh"
 #include "debug.hh"
 
-vector<string> StringStuff::strSplit(const string &theString, const char &theSeparator)
+void StringStuff::strSplit(vector<string> &theResult, const string &theString, const char &theSeparator)
 {
-  vector<string> myList;
   int prev_pos=0;
   int pos=theString.find_first_of(theSeparator, 0);
 
-  // TODO: Something is volatile in here and causes the occasional segmentation fault. Probaly stack stuff
   Debug::print(200, (string) "StringStuff::strSplit " + theString);
+
+  // TODO: Something is volatile in here and causes the occasional segmentation fault. Probaly stack stuff
 
   while(pos!=string::npos) {
     string subs=theString.substr(prev_pos, pos-prev_pos);
-    myList.push_back(lrtrim(subs));
+    theResult.push_back(lrtrim(subs));
     pos++;
     prev_pos=pos;
     pos=theString.find_first_of(theSeparator, pos);
   }
 
+  // Add whatever is left too
   if (prev_pos<theString.length()) {
-    myList.push_back(lrtrim(theString.substr(prev_pos)));
+    theResult.push_back(lrtrim(theString.substr(prev_pos)));
   }
-
-  return myList;
 }
 
 string StringStuff::rtrim(const string &s, const string &delim)

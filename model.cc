@@ -26,7 +26,7 @@ Model::Model(Config &theConfig)
 Model::~Model()
 {
   // Safety check to see that I don't accidentally create a whole bunch of objects
-  Debug::print(10, "Cleaning up Model object");
+  Debug::print(100, "Cleaning up Model object");
 }
 
 void Model::populate(string theFileName)
@@ -39,12 +39,19 @@ void Model::populate(string theFileName)
 
   while(!eof) {
     // Build the model based on the oneLine;
-    if (oneLine.size()<=3){
+    if(oneLine.size()==0) {
+      eof=myFile.getLine(oneLine);
+      continue;
+    }
+
+    while (oneLine.size()<=3){
+      Debug::print(10, " ->Missing argument. Adding...");
       oneLine.push_back("");
     }
 
     ModelNode* myNode=new ModelNode(oneLine[0], atoi(oneLine[1].c_str()), atoi(oneLine[2].c_str()), oneLine[3]);
     myNodes.insert(myNode);
+    Debug::print(10, (string) " Added Node " + myNode->toString());
     myCounter++;
     eof=myFile.getLine(oneLine);
   }  
@@ -59,7 +66,6 @@ void Model::save(string theFileName)
   for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++) {
     myFile.writeLine((*i)->toString(myFile.sep(), myFile.subsep()));
   }
-
 }
 
 
@@ -73,78 +79,84 @@ void Model::add(ModelNode* theNode)
   myNodes.insert(theNode);
 }
 
-set<ModelNode*> Model::get(const int theSource)
+
+set<ModelNode*>* Model::getNodes() const
 {
-  set<ModelNode*> myRetSet;
-
-  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
-    {
-      if ((*i)->source==theSource){
-	myRetSet.insert(*i);
-      }
-    }
-
+  set<ModelNode*>* myRetSet=new set<ModelNode*>();
+  myRetSet->insert(myNodes.begin(), myNodes.end());
   return myRetSet;
 }
 
-set<ModelNode*> Model::get(const string &theType, const int theSource)
+void Model::filterBySource(set<ModelNode*> &theNodes, const int theSource) const
 {
   set<ModelNode*> myRetSet;
-
-  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
-    {
-      if ((*i)->type==theType && 
-	  (*i)->source==theSource) {
-	myRetSet.insert(*i);
-      }
+  for(set<ModelNode*>::iterator i=theNodes.begin(); i!=theNodes.end(); i++){
+    if ((*i)->source==theSource){
+      myRetSet.insert(*i);
     }
+  }
 
-  return myRetSet;
+  theNodes.swap(myRetSet);
 }
 
-
-set<ModelNode*> Model::get(const string &theType)
+void Model::filterByTarget(set<ModelNode*> &theNodes, const int theTarget) const
 {
   set<ModelNode*> myRetSet;
-
-  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
-    {
-      if ((*i)->type==theType){
-	myRetSet.insert(*i);
-      }
+  for(set<ModelNode*>::iterator i=theNodes.begin(); i!=theNodes.end(); i++){
+    if ((*i)->target==theTarget){
+      myRetSet.insert(*i);
     }
-
-  return myRetSet;
+  }
+  
+  theNodes.swap(myRetSet);
 }
 
-set<ModelNode*> Model::get(const string &theType, const string &theName)
+void Model::filterByType(set<ModelNode*> &theNodes, const string &theType) const
 {
   set<ModelNode*> myRetSet;
-
-  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
-    {
-      if ((*i)->type==theType && (*i)->getArg("name")==theName){
-	myRetSet.insert(*i);
-      }
+  for(set<ModelNode*>::iterator i=theNodes.begin(); i!=theNodes.end(); i++){
+    if ((*i)->type==theType){
+      myRetSet.insert(*i);
     }
-
-  return myRetSet;
+  }
+  
+  theNodes.swap(myRetSet);
 }
 
-set<ModelNode*> Model::get(const string &theType, const int theSource, const string &theName)
+void Model::filterByArg(set<ModelNode*> &theNodes, const string &theArgName, const string &theArg) const
 {
   set<ModelNode*> myRetSet;
-
-  for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++)
-    {
-      if ((*i)->type==theType && 
-	  (*i)->source==theSource &&
-	  (*i)->getArg("name")==theName){
-	myRetSet.insert(*i);
-      }
+  for(set<ModelNode*>::iterator i=theNodes.begin(); i!=theNodes.end(); i++){
+    if ((*i)->getArg(theArgName)==theArg){
+      myRetSet.insert(*i);
     }
+  }
+  
+  theNodes.swap(myRetSet);
+}
 
-  return myRetSet;
+int Model::getInDegrees(const set<ModelNode*> &theArches, const int theNode) const
+{
+  int c=0;
+  for(set<ModelNode*>::iterator i=theArches.begin(); i!=theArches.end(); i++){
+    if ((*i)->target==theNode) {
+      c++;
+    }
+  }  
+
+  return c;
+}
+
+int Model::getOutDegrees(const set<ModelNode*> &theArches, const int theNode) const
+{
+  int c=0;
+  for(set<ModelNode*>::iterator i=theArches.begin(); i!=theArches.end(); i++){
+    if ((*i)->source==theNode) {
+      c++;
+    }
+  }    
+
+  return c;
 }
 
 
@@ -174,6 +186,11 @@ ModelNode::ModelNode(const string &theType, const int &theSource, const int &the
   parseArgs(args, theArgs);
 }
 
+ModelNode::~ModelNode()
+{
+  // Added this in a fit of weakness to see whether I accidentally deletes these objects somewhere
+  Debug::print(100, (string) " Deleting ModelNode object: " + toString());
+}
 
 bool ModelNode::operator<(const ModelNode &theNode) const
 {
@@ -216,13 +233,21 @@ void ModelNode::setArg(const string &theArgName, const string &theValue)
 
 void ModelNode::parseArgs(map<string, string> &argList, const string &theArgs)
 {
-  vector<string> splitArgs=StringStuff::strSplit(theArgs, ',');
+  vector<string> splitArgs;
+  StringStuff::strSplit(splitArgs, theArgs, ',');
   
   for(vector<string>::iterator i=splitArgs.begin(); i!=splitArgs.end(); i++) {
-    vector<string> oneArg=StringStuff::strSplit((*i), '=');
-    for(vector<string>::iterator j=oneArg.begin(); j!=oneArg.end(); j++) {
-      Debug::print(100, (string) "###" + *i + " # " + *j);
-      argList[*j]=*(++j);
+    vector<string> oneArg;
+    StringStuff::strSplit(oneArg, (*i), '=');
+    for(vector<string>::iterator j=oneArg.begin(); j!=oneArg.end(); ) {
+      Debug::print(100, (string) "   Parsing Argument " + *i + "  key=" + *j);
+      string key=*j;
+      string val="";
+      j++;
+      if (j!=oneArg.end()) {
+	val=(*j);
+	argList[key]=val;
+      }
     }
   }  
 }

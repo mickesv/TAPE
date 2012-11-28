@@ -3,7 +3,11 @@ CLANGINC=/opt/local/libexec/llvm-3.1/include
 CFLAGS=-g -L$(CLANGLIB) -I$(CLANGINC)
 CC=g++
 PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o
-CEOBJECTS=codeext.o config.o stringstuff.o model.o csvfile.o debug.o extractor.o $(PARSERS)
+COMMON= config.o stringstuff.o model.o csvfile.o debug.o
+CEOBJECTS=codeext.o extractor.o $(COMMON) $(PARSERS)
+GRMOBJECTS=grmaker.o graphmaker.o $(COMMON)
+#GRAOBJECTS=granalyse.o componentmaker.o $(COMMON)
+GRAOBJECTS=granalyse.o componentmaker.o $(COMMON)
 
 %.o: %.cc *.hh
 	$(CC) $(CFLAGS) -c $<
@@ -12,19 +16,31 @@ CEOBJECTS=codeext.o config.o stringstuff.o model.o csvfile.o debug.o extractor.o
 codeext: $(CEOBJECTS)
 	$(CC) $(CFLAGS) -lclang -o codeext $(CEOBJECTS)
 
-all: codeext
+grmaker: $(GRMOBJECTS)
+	$(CC) $(CFLAGS) -lclang -o grmaker $(GRMOBJECTS)
 
-go: codeext
-	LD_LIBRARY_PATH=$(CLANGLIB) ./codeext read=false
+granalyse: $(GRAOBJECTS)
+	$(CC) $(CFLAGS) -lclang -o granalyse $(GRAOBJECTS)
+
+all: codeext grmaker granalyse
+
+go: all
+	./codeext debugLevel=0
+	./granalyse
 	@echo "Final Model:"
 	@cat msvtest.csv
 	@echo "----------"
+	./grmaker debugLevel=0
 
-gawk: codeext
-	LD_LIBRARY_PATH=$(CLANGLIB) ./codeext cfgFile=gawk.cfg read=false
-	@echo "Final Model:"
-	@cat gawk.csv
-	@echo "----------"
+
+gawk: all
+#	./codeext cfgFile=gawk.cfg
+	./granalyse cfgFile=gawk.cfg
+#	@echo "Final Model:"
+#	@cat gawk.csv
+#	@echo "----------"
+	./grmaker cfgFile=gawk.cfg
+
 
 clean:
 	rm *.o

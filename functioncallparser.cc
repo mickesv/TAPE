@@ -66,9 +66,11 @@ CXChildVisitResult FunctionCallParser::parse(const CXCursor &theCursor, const CX
     const char* name=clang_getCString(clang_getCursorDisplayName(theCursor));
 
     int called=-1;    
-    set<ModelNode*> nodes=myModelPtr->get("FileDeclaresFunction", name);
-    if(nodes.size()>=1) {
-      called=(*nodes.begin())->target;
+    set<ModelNode*>* nodes=myModelPtr->getNodes();
+    myModelPtr->filterByType(*nodes,"FileDeclaresFunction");
+    myModelPtr->filterByArg(*nodes, "name", name);
+    if(nodes->size()>=1) {
+      called=(*(nodes->begin()))->target;
     }
 
     CallNode* cn=new CallNode(theCursor, name, theData->getNode()->target, called);

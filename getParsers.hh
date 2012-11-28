@@ -17,7 +17,8 @@ using namespace std;
 
 void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
 {
-  vector<string> theList=theConfig.getList("parsers");
+  vector<string> theList;
+  theConfig.getList(theList,"parsers");
 
   // add an empty Parser to make sure that I do something (=nothing)
   Parser* p=new Parser();
