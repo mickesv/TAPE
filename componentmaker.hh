@@ -14,9 +14,12 @@ public:
 
   void start(Model &theModel, Config &theConfig);
 
-  // Collect all leaf nodes that are only called by one other node
   void gatherNodeChains(Model &theModel, Config &theConfig);
+  void distanceMatrix(Model &theModel, Config &theConfig);
 private:
+  int getInDegrees(const set<ModelNode*> &theArches, const int theNode) const;
+  int getOutDegrees(const set<ModelNode*> &theArches, const int theNode) const;
+
   Model* myModelPtr;
   Config* myConfigPtr;
 };

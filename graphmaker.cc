@@ -13,40 +13,55 @@ using namespace std;
 void GraphMaker::makeGraph(Model &theModel, Config &theConfig)
 {
   vector<string> theList;
+  map<string, bool> theOptions;
   theConfig.getList(theList, "graphElements");
 
+  // Start the output
   *myFile << "digraph {" << endl;
-  *myFile << " rankdir=LR" << endl;
+  *myFile << " rankdir=LR;" << endl;
+  *myFile << " compound=true;" << endl;
+  *myFile << endl;
 
+  // Find out the options
   for(vector<string>::iterator i=theList.begin(); i!=theList.end(); i++) {
-    if((*i)=="components") { // This will probably not be sufficient for components, but let's wait and see...
+    theOptions[*i]=true;
+  }
+
+  // Invoke the right method. I am not using the options map since I want to keep the order as in the config file for now...
+  for(vector<string>::iterator i=theList.begin(); i!=theList.end(); i++) {
+    if((*i)=="components") {
       Debug::print(2, " Extracting Components");
-      makeNodes(theModel, "Component", "ProjectHasComponent");
-      makeArches(theModel, "Contains", "ComponentContains");
-      makeArches(theModel, "ComponentCall", "ComponentCalls");
+      if(theOptions.find("functions") != theOptions.end()) {
+	makeSubGraphs(theModel, theOptions, "Component", "ProjectHasComponent");
+	makeArches(theModel, theOptions, "ComponentCall", "ComponentCalls");
+      } else {
+	makeNodes(theModel, theOptions, "Component", "ProjectHasComponent");
+	makeArches(theModel, theOptions, "ComponentCall", "ComponentCalls");
+      }
     }    
 
     if((*i)=="functions") {
       Debug::print(2, " Extracting Functions");
-      makeNodes(theModel, "Function", "FileDeclaresFunction");
+      makeNodes(theModel, theOptions, "Function", "FileDeclaresFunction");
     }
 
     if((*i)=="functionCalls") {
       Debug::print(2, " Extracting FunctionCalls");
-      makeArches(theModel, "Call", "FunctionCallsFunction");
+      makeArches(theModel, theOptions, "Call", "FunctionCallsFunction");
     }
 
     if((*i)=="globalVariableAccess") {
       Debug::print(2, " Extracting GlobalVariableAccess");
-      makeNodes(theModel, "Global Variable", "FileDeclaresVariable");
-      makeArches(theModel, "GVAccess", "FunctionAccessVariable");
+      makeNodes(theModel, theOptions, "Global Variable", "FileDeclaresVariable");
+      makeArches(theModel, theOptions, "GVAccess", "FunctionAccessVariable");
     }    
   }
 
+  // end the graph
   *myFile << "}" << endl;
 }
 
-void GraphMaker::makeNodes(Model &theModel, const string &theStereotype, const string &theFilter)
+void GraphMaker::makeNodes(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter)
 {
   set<ModelNode*>* theNodes=theModel.getNodes();
   theModel.filterByType(*theNodes,theFilter);
@@ -63,7 +78,7 @@ void GraphMaker::makeNodes(Model &theModel, const string &theStereotype, const s
   *myFile << endl;
 }
 
-void GraphMaker::makeArches(Model &theModel, const string &theStereotype, const string &theFilter)
+void GraphMaker::makeArches(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter)
 {
   set<ModelNode*>* theNodes=theModel.getNodes();
   theModel.filterByType(*theNodes,theFilter);
@@ -84,7 +99,41 @@ void GraphMaker::makeArches(Model &theModel, const string &theStereotype, const 
 
 }
 
+void GraphMaker::makeSubGraphs(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter)
+{
+  set<ModelNode*>* theComponents=theModel.getNodes();
+  theModel.filterByType(*theComponents,theFilter);
+  
+  *myFile << "// " << theStereotype << " Subgraphs" << endl;
+  
+  for(set<ModelNode*>::iterator i=theComponents->begin(); i!=theComponents->end(); i++) {
+    if ((*i)->target==-1) {
+      continue;
+    }
+  
+    *myFile << "subgraph cluster_" << (*i)->target << " {" << endl;
+    *myFile << " label=\"<<" << theStereotype << ">> " << (*i)->getArg("name") << "\\n"
+	    << " CType=" << (*i)->getArg("CType") << ", size=" << (*i)->getArg("size") << "\";" << endl;
+
+    if (theOptions.find("functions")!=theOptions.end()) {
+      set<ModelNode*>* theFunctions=theModel.getNodes();
+      theModel.filterByType(*theFunctions, "ComponentContains");
+      theModel.filterBySource(*theFunctions, (*i)->target);
+
+      for(set<ModelNode*>::iterator j=theFunctions->begin(); j!=theFunctions->end(); j++) {
+	*myFile << (*j)->target << ";" << "// " << (*j)->getArg("contained") << endl;
+      }
+
+    }
+
+    *myFile << "}" << endl;
+  }
+
+  
+}
+
 void GraphMaker::setOutput(iostream* theFile)
 {
   myFile=theFile;
 }
+

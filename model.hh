@@ -51,10 +51,6 @@ public:
   void filterByTarget(set<ModelNode*> &theNodes, const int theTarget) const;
   void filterByType(set<ModelNode*> &theNodes, const string &theType) const;
   void filterByArg(set<ModelNode*> &theNodes, const string &theArgName, const string &theArg) const;
-
-  int getInDegrees(const set<ModelNode*> &theArches, const int theNode) const;
-  int getOutDegrees(const set<ModelNode*> &theArches, const int theNode) const;
-
   
   void debugPrint(int theLevel);
 private:

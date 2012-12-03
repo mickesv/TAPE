@@ -14,8 +14,9 @@ public:
   GraphMaker(Model &theModel, Config &theConfig) : myModelPtr(&theModel), myConfigPtr(&theConfig) {};
 
   void makeGraph(Model &theModel, Config &theConfig);
-  void makeNodes(Model &theModel, const string &theStereotype, const string &theFilter);
-  void makeArches(Model &theModel, const string &theStereotype, const string &theFilter);
+  void makeNodes(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter);
+  void makeArches(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter);
+  void makeSubGraphs(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter);
   void setOutput(iostream* theFile);
 private:
   Model* myModelPtr;

@@ -135,31 +135,6 @@ void Model::filterByArg(set<ModelNode*> &theNodes, const string &theArgName, con
   theNodes.swap(myRetSet);
 }
 
-int Model::getInDegrees(const set<ModelNode*> &theArches, const int theNode) const
-{
-  int c=0;
-  for(set<ModelNode*>::iterator i=theArches.begin(); i!=theArches.end(); i++){
-    if ((*i)->target==theNode) {
-      c++;
-    }
-  }  
-
-  return c;
-}
-
-int Model::getOutDegrees(const set<ModelNode*> &theArches, const int theNode) const
-{
-  int c=0;
-  for(set<ModelNode*>::iterator i=theArches.begin(); i!=theArches.end(); i++){
-    if ((*i)->source==theNode) {
-      c++;
-    }
-  }    
-
-  return c;
-}
-
-
 void Model::debugPrint(int theLevel)
 {
   if(theLevel>Debug::myLevel) { return; }

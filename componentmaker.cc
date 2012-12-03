@@ -15,7 +15,17 @@ void ComponentMaker::start(Model &theModel, Config &theConfig)
       Debug::print(2, " Gathering node chains");
       gatherNodeChains(theModel, theConfig);
     }
+
+    if((*i)=="distanceMatrix") {
+      Debug::print(2, " Generating distance matrix");
+      distanceMatrix(theModel, theConfig);
+    }
   }    
+}
+
+void ComponentMaker::distanceMatrix(Model &theModel, Config &theConfig)
+{
+  
 }
 
 void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
@@ -45,8 +55,8 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 
   while (i!=theNodes->end()) {
     Debug::print(10, (string) "  Inspecting: " + (*i)->toString());
-    int inDeg=theModel.getInDegrees(*theArches, (*i)->target);
-    int outDeg=theModel.getOutDegrees(*theArches, (*i)->target);
+    int inDeg=getInDegrees(*theArches, (*i)->target);
+    int outDeg=getOutDegrees(*theArches, (*i)->target);
         
     if (inDeg==1 || outDeg==1) {
       Debug::print(100, "   Indeg==1 or OutDeg==1, Looking Upwards to find the root of the chain");
@@ -66,8 +76,8 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 	tmpIn.insert(theArches->begin(), theArches->end());
 	theModel.filterByTarget(tmpIn, parent);
 
-	inDeg=theModel.getInDegrees(*theArches, parent);
-	outDeg=theModel.getOutDegrees(*theArches, parent);
+	inDeg=getInDegrees(*theArches, parent);
+	outDeg=getOutDegrees(*theArches, parent);
 	
 	if (inDeg!=1) {
 	  Debug::print(100, "   Root found. Indeg!=1");
@@ -111,8 +121,8 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 	    tmpOut.insert(theArches->begin(), theArches->end());
 	    theModel.filterBySource(tmpOut, child);
 	    
-	    inDeg=theModel.getInDegrees(*theArches, child);
-	    outDeg=theModel.getOutDegrees(*theArches, child);
+	    inDeg=getInDegrees(*theArches, child);
+	    outDeg=getOutDegrees(*theArches, child);
 	    
 	    
 	    if (outDeg!=1) {
@@ -137,7 +147,12 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 	  ModelNode* theParent=*(tmpNodes->begin());
 	  delete(tmpNodes);
 
+	  stringstream ss;
+	  ss << theChain.size();
+
 	  ComponentNode *cn=new ComponentNode((string) "C" + theParent->getArg("name"), -1);
+	  cn->setArg("CType", "nodeChain");
+	  cn->setArg("size", ss.str());
 	  theModel.add(cn);
 
 	  for(set<int>::iterator q=theChain.begin(); q!=theChain.end(); q++) {
@@ -149,6 +164,7 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 	    delete(tmpNodes);
 
 	    ComponentContainsNode *ccn=new ComponentContainsNode(theN->getArg("name"), cn->target, *q);
+	    ccn->setArg("Component", cn->getArg("name"));
 	    theModel.add(ccn);
 	  }
 
@@ -168,3 +184,28 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
   delete(theNodes);
   delete(theArches);
 }
+
+int ComponentMaker::getInDegrees(const set<ModelNode*> &theArches, const int theNode) const
+{
+  int c=0;
+  for(set<ModelNode*>::iterator i=theArches.begin(); i!=theArches.end(); i++){
+    if ((*i)->target==theNode) {
+      c++;
+    }
+  }  
+
+  return c;
+}
+
+int ComponentMaker::getOutDegrees(const set<ModelNode*> &theArches, const int theNode) const
+{
+  int c=0;
+  for(set<ModelNode*>::iterator i=theArches.begin(); i!=theArches.end(); i++){
+    if ((*i)->source==theNode) {
+      c++;
+    }
+  }    
+
+  return c;
+}
+

@@ -26,7 +26,8 @@ all: codeext grmaker granalyse
 
 go: all
 	./codeext debugLevel=0
-	./granalyse
+	./granalyse debugLevel=0
+	@echo "----------"
 	@echo "Final Model:"
 	@cat msvtest.csv
 	@echo "----------"
