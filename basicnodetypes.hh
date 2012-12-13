@@ -12,11 +12,12 @@ class ProjectNode : public ModelNode
 {
 public:
   ProjectNode(const string &theName) {
-    type="ProjectHasId";
+    type=t();
     source=-1;
     target=-1;
     setArg("name", theName);
   };
+  virtual string t();
 };
 
 
@@ -24,13 +25,14 @@ class FileNode : public ModelNode
 {
 public:
   FileNode(const string &theBasePath, const string &theName, const int &theProjectId) {
-    type="ProjectHasFile";
+    type=t();
     source=theProjectId;
     target=-1;
     setArg("name", theName);
     setArg("basePath", theBasePath);
   };  
 
+  virtual string t();
 private:
 };
 
@@ -39,7 +41,7 @@ class FunctionNode : public ModelNode
 {
 public:
   FunctionNode(const CXCursor &theCursor, const string &theName, const int &theFileId) {
-    type="FileDeclaresFunction";
+    type=t();
     source=theFileId;
     target=-1;
     setArg("name", theName);
@@ -47,6 +49,7 @@ public:
   }
 
   CXCursor* getCursor() { return &myCursor; };  
+  virtual string t();
 private:
   CXCursor myCursor;
 };
@@ -55,7 +58,7 @@ class VariableNode : public ModelNode
 {
 public:
   VariableNode(const CXCursor &theCursor, const string &theName, const int &theFileId) {
-    type="FileDeclaresVariable";
+    type=t();
     source=theFileId;
     target=-1;
     setArg("name", theName);
@@ -64,6 +67,7 @@ public:
 
 
   CXCursor* getCursor() { return &myCursor; };
+  virtual string t();
 
 private:
   CXCursor myCursor;

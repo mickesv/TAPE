@@ -47,3 +47,5 @@ clean:
 	rm *.o
 	rm *~
 	rm codeext
+	rm granalyse
+	rm grmaker

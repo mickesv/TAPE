@@ -28,12 +28,13 @@ class ComponentNode : public ModelNode
 {
 public:
   ComponentNode(const string &theName, const int &theProjectId) {
-    type="ProjectHasComponent";
+    type=t();
     source=theProjectId;
     target=-1;
     setArg("name", theName);
   }
 
+  virtual string t();
 private:
 };
 
@@ -41,14 +42,14 @@ class ComponentContainsNode : public ModelNode
 {
 public:
   ComponentContainsNode(const string &theName, const int &theComponentId, const int &theTargetId) {
-    type="ComponentContains";
+    type=t();
     source=theComponentId;
     target=theTargetId;
     setArg("contained", theName);
   }
 
   virtual void setId(const int &theId) { }; // Do not need any id.    
-
+  virtual string t();
 private:
 };
 
@@ -57,14 +58,14 @@ class ComponentCallNode : public ModelNode
 {
 public:
   ComponentCallNode(const string &theName, const int &theComponentId, const int &theTargetId) {
-    type="ComponentCalls";
+    type=t();
     source=theComponentId;
     target=theTargetId;
     setArg("target", theName);
   }
 
   virtual void setId(const int &theId) { }; // Do not need any id.  
-  
+  virtual string t();
 
 private:
 };

@@ -11,7 +11,7 @@ class GlobalVariableAccessNode : public ModelNode
 {
 public:
   GlobalVariableAccessNode(const CXCursor &theCursor, const string &theName, const int &theFunctionId, const int &theVariableId) {
-    type="FunctionAccessVariable";
+    type=t();
     source=theFunctionId;
     target=theVariableId;
     setArg("name", theName);
@@ -20,7 +20,7 @@ public:
 
   virtual void setId(const int &theId) { }; // Do not need any id.  
   CXCursor* getCursor() { return &myCursor; };
-
+  virtual string t();
 private:
   CXCursor myCursor;
 

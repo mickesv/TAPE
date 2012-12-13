@@ -10,6 +10,7 @@
 #include "extractor.hh"
 #include "debug.hh"
 #include "getParsers.hh"
+#include "nodetypes.hh"
 
 using namespace std;
 

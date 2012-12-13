@@ -11,7 +11,7 @@ class CallNode : public ModelNode
 {
 public:
   CallNode(const CXCursor &theCursor, const string &theName, const int& theCaller, const int &theCalled) {
-    type="FunctionCallsFunction";
+    type=t();
     source=theCaller;
     target=theCalled;
     setArg("target", theName);
@@ -20,7 +20,7 @@ public:
 
   virtual void setId(const int &theId) { }; // Do not need any id.  
   CXCursor* getCursor() { return &myCursor; };
-
+  virtual string t();
 private:
   CXCursor myCursor;
 };

@@ -7,6 +7,7 @@
 #include "parser.hh"
 #include "debug.hh"
 #include "componentmaker.hh"
+#include "nodetypes.hh"
 
 using namespace std;
 

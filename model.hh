@@ -10,6 +10,7 @@
 class ModelNode
 {
 public:
+  virtual string t();
   string type;
   int source;
   int target;

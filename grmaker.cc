@@ -9,6 +9,7 @@
 #include "parser.hh"
 #include "debug.hh"
 #include "graphmaker.hh"
+#include "nodetypes.hh"
 
 using namespace std;
 
