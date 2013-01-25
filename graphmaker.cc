@@ -45,26 +45,147 @@ void GraphMaker::makeGraph(Model &theModel, Config &theConfig)
       }
     }    
 
+    if ((*i)=="classes") {
+      Debug::print(2, " Extracting Classes");
+      makeClassNodes(theModel, theOptions);
+    }
+
+
     if((*i)=="functions") {
       Debug::print(2, " Extracting Functions");
       makeNodes(theModel, theOptions, "Function", FunctionNode::t());
+      if (theOptions["classes"]!=true) {
+	makeNodes(theModel, theOptions, "Method", MethodNode::t());
+      }
     }
 
     if((*i)=="functionCalls") {
-      Debug::print(2, " Extracting FunctionCalls");
-      makeArches(theModel, theOptions, "Call", CallNode::t());
+      if(theOptions["classes"]==true) {
+	Debug::print(2, " Extracting Method Calls");
+	makeClassArches(theModel, theOptions);
+      } else {
+	Debug::print(2, " Extracting FunctionCalls");
+	makeArches(theModel, theOptions, "Call", CallNode::t());
+      }
     }
 
     if((*i)=="globalVariableAccess") {
       Debug::print(2, " Extracting GlobalVariableAccess");
       makeNodes(theModel, theOptions, "Global Variable", VariableNode::t());
       makeArches(theModel, theOptions, "GVAccess", GlobalVariableAccessNode::t());
-    }    
+    }
+
   }
 
   // end the graph
   *myFile << "}" << endl;
 }
+
+void GraphMaker::makeClassNodes(Model &theModel, map<string,bool> &theOptions)
+{
+  // Treating classes as a special case to get them as annotated and UML-like as possible
+  set<ModelNode*>* theNodes=theModel.getNodes();
+  theModel.filterByType(*theNodes,ClassNode::t());
+  
+  *myFile << "// Class Nodes" << endl;
+  *myFile << "rankdir=TD;" << endl;
+  for(set<ModelNode*>::iterator i=theNodes->begin(); i!=theNodes->end(); i++) {
+    if ((*i)->target==-1) {
+      continue;
+    }
+    
+    *myFile << (*i)->target
+	    << " [shape=\"record\""
+	    << "\n   label=\"{class " << (*i)->getArg("name") << "\\n|" << flush;
+      
+    // add attributes
+    set<ModelNode*>* n=theModel.getNodes();
+    theModel.filterBySource(*n, (*i)->target);
+    theModel.filterByType(*n,AttributeNode::t());
+    for(set<ModelNode*>::iterator j=n->begin(); j!=n->end(); j++) {
+      if ((*j)->target==-1) {
+	continue;
+      }
+      *myFile << (*j)->getArg("name") << "\\l" << flush;
+    }
+    *myFile << "|" << flush;
+
+    // add methods
+    n=theModel.getNodes();
+    theModel.filterBySource(*n, (*i)->target);
+    theModel.filterByType(*n,MethodNode::t());
+    for(set<ModelNode*>::iterator j=n->begin(); j!=n->end(); j++) {
+      if ((*j)->target==-1) {
+	continue;
+      }
+      *myFile << (*j)->getArg("name") << "\\l" << flush;
+    }
+
+    *myFile << "}\"];" << endl;
+  }
+  *myFile << endl;
+  
+}
+
+void GraphMaker::makeClassArches(Model &theModel, map<string,bool> &theOptions)
+{
+  set<ModelNode*>* theNodes=theModel.getNodes();
+  theModel.filterByType(*theNodes,ClassNode::t());
+  int callerClass=-1;
+  int calledClass=-1;
+
+  *myFile << "// Method Call Arches" << endl;
+
+  // Iterate over all classes
+  for(set<ModelNode*>::iterator i=theNodes->begin(); i!=theNodes->end(); i++) {
+    Debug::print(100, (string) "  Inspecting class " + (*i)->toString());
+    callerClass=(*i)->target;
+    set<ModelNode*>* n=theModel.getNodes();
+    theModel.filterBySource(*n,callerClass);
+    theModel.filterByType(*n,MethodNode::t());
+
+    set<int> myCalled;
+
+    // Iterate over all methods in class *i
+    for(set<ModelNode*>::iterator j=n->begin(); j!=n->end(); j++) {
+      Debug::print(100, (string) "  Inspecting method " + (*j)->toString());
+      set<ModelNode*>* n2=theModel.getNodes();
+      theModel.filterByType(*n2,CallNode::t());
+      theModel.filterBySource(*n2,(*j)->target);
+
+      // Iterate over all method calls from method *j
+      for(set<ModelNode*>::iterator k=n2->begin(); k!=n2->end(); k++) {
+	Debug::print(100, (string) "  Inspecting method call " + (*k)->toString());
+	set<ModelNode*>* n3=theModel.getNodes();
+	theModel.filterByType(*n3,MethodNode::t());
+	theModel.filterByTarget(*n3,(*k)->target);
+
+	if(n3->size()>=1) {
+	  calledClass=(*(n3->begin()))->source;
+	}
+
+	if ((callerClass==-1 ||
+	    calledClass==-1) ||
+	    (callerClass==calledClass) ||
+	    (myCalled.find(calledClass)!=myCalled.end())
+	    ) {
+	  continue;	  
+	}
+    
+	
+	myCalled.insert(calledClass);
+
+	*myFile << callerClass << "->"
+		<< calledClass
+		<< " [label=\"<<MCall>>\"];"<< endl;
+      }
+    }
+  }
+
+  *myFile << endl;
+
+}
+
 
 void GraphMaker::makeNodes(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter)
 {
