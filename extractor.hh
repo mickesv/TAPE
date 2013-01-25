@@ -13,7 +13,7 @@ public:
   Extractor(Model &theModel, Config &theConfig) : myModelPtr(&theModel), myConfig(theConfig) {};
 
   void extractDeclarations(FileNode* theNode);
-  void parseFunction(set<Parser*> &theParsers, FunctionNode* theFunction);
+  void parseFunction(set<Parser*> &theParsers, ModelNode* theFunction);
 
 private:
   static string getFilename(const CXCursor &c);  

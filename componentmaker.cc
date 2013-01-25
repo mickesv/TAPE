@@ -5,6 +5,11 @@
 #include "model.hh"
 #include "config.hh"
 
+#include "basicnodetypes.hh"
+#include "functioncallparser.hh"
+#include "gvaccessparser.hh"
+
+
 void ComponentMaker::start(Model &theModel, Config &theConfig)
 {
   vector<string> theList;
@@ -35,17 +40,17 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 
   // Graph Nodes
   set<ModelNode*>* theNodes=theModel.getNodes();
-  theModel.filterByType(*theNodes,"FileDeclaresFunction");
+  theModel.filterByType(*theNodes,FunctionNode::t());
   set<ModelNode*>* moreNodes=theModel.getNodes();
-  theModel.filterByType(*moreNodes,"ProjectHasComponent");
+  theModel.filterByType(*moreNodes,ComponentNode::t());
   theNodes->insert(moreNodes->begin(), moreNodes->end());
   delete(moreNodes);
 
   // Graph Arches
   set<ModelNode*>* theArches=theModel.getNodes();
-  theModel.filterByType(*theArches,"FunctionCallsFunction");
+  theModel.filterByType(*theArches,CallNode::t());
   moreNodes=theModel.getNodes();
-  theModel.filterByType(*moreNodes,"ComponentCall");
+  theModel.filterByType(*moreNodes,ComponentCallNode::t());
   theArches->insert(moreNodes->begin(), moreNodes->end());
   delete(moreNodes);
 
@@ -93,7 +98,7 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 
       // Let's check if this is a chain that I have already found
       set<ModelNode*>* tmpNodes=theModel.getNodes();
-      theModel.filterByType(*tmpNodes, "ComponentContains");
+      theModel.filterByType(*tmpNodes, ComponentContainsNode::t());
       theModel.filterByTarget(*tmpNodes, parent);
 
       if (tmpNodes->size()==0) {
@@ -142,7 +147,7 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 	  // Create Nodes and add to Model
 	  // Find the ModelNode to get the name
 	  set<ModelNode*>* tmpNodes=theModel.getNodes();
-	  theModel.filterByType(*tmpNodes, "FileDeclaresFunction");
+	  theModel.filterByType(*tmpNodes, FunctionNode::t());
 	  theModel.filterByTarget(*tmpNodes, parent);
 	  ModelNode* theParent=*(tmpNodes->begin());
 	  delete(tmpNodes);
@@ -158,7 +163,7 @@ void ComponentMaker::gatherNodeChains(Model &theModel, Config &theConfig)
 	  for(set<int>::iterator q=theChain.begin(); q!=theChain.end(); q++) {
 	    // Get the name...
 	    set<ModelNode*>* tmpNodes=theModel.getNodes();
-	    theModel.filterByType(*tmpNodes, "FileDeclaresFunction");
+	    theModel.filterByType(*tmpNodes, FunctionNode::t());
 	    theModel.filterByTarget(*tmpNodes, *q);
 	    ModelNode* theN=*(tmpNodes->begin());
 	    delete(tmpNodes);

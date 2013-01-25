@@ -4,13 +4,13 @@
 
 #include "parser.hh"
 
-void Parser::startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void Parser::startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   myModelPtr=&theModel;
   myCompoundDepth=0;
 }
 
-void Parser::endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void Parser::endFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   myModelPtr=&theModel;
 }

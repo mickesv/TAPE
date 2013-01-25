@@ -21,7 +21,7 @@ private:
 };
 
 
-void GVAccessParser::startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void GVAccessParser::startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   Parser::startFunction(theModel, theFunction, theData);
   myVariables.clear();
@@ -29,7 +29,7 @@ void GVAccessParser::startFunction(Model &theModel, FunctionNode* theFunction, P
 
   // Get all Global Variables in this file and move over to my temporary structure.
   set<ModelNode*>* myGV = theModel.getNodes();
-  theModel.filterByType(*myGV,"FileDeclaresVariable");
+  theModel.filterByType(*myGV,VariableNode::t());
   theModel.filterBySource(*myGV, theFunction->source);  
   VarDecl* vd;
   for(set<ModelNode*>::iterator i=myGV->begin(); i!=myGV->end(); i++) {
@@ -41,7 +41,7 @@ void GVAccessParser::startFunction(Model &theModel, FunctionNode* theFunction, P
   }
 }
 
-void GVAccessParser::endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void GVAccessParser::endFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   Parser::endFunction(theModel, theFunction, theData);
 
@@ -136,7 +136,7 @@ CXChildVisitResult GVAccessParser::parse(const CXCursor &theCursor, const CXCurs
 	  
 	// Make sure I am not referring to a function
 	set<ModelNode*>* nodes=myModelPtr->getNodes();
-	myModelPtr->filterByType(*nodes,"FileDeclaresFunction");
+	myModelPtr->filterByType(*nodes,FunctionNode::t());
 	myModelPtr->filterBySource(*nodes, theData->getNode()->source);
 	myModelPtr->filterByArg(*nodes, "name", myName);
 	if (nodes->size()!=0) {

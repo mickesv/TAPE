@@ -8,8 +8,8 @@
 class FunctionSizeParser : public Parser
 {
 public:
-  virtual void startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
-  virtual void endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
+  virtual void startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData);
+  virtual void endFunction(Model &theModel, ModelNode* theFunction, ParserData* theData);
   virtual CXChildVisitResult parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData* theData);
 
 private:

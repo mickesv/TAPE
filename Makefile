@@ -25,7 +25,7 @@ granalyse: $(GRAOBJECTS)
 all: codeext grmaker granalyse
 
 go: all
-	./codeext debugLevel=0
+	./codeext
 	./granalyse debugLevel=0
 	@echo "----------"
 	@echo "Final Model:"
@@ -42,6 +42,9 @@ gawk: all
 #	@echo "----------"
 	./grmaker cfgFile=gawk.cfg
 
+this: all
+	./codeext cfgFile=this.cfg
+#	./grmaker cfgFile=this.cfg debugLevel=0
 
 clean:
 	rm *.o

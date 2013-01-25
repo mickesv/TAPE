@@ -16,13 +16,13 @@ using namespace std;
  */
 
 
-void FunctionSizeParser::startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void FunctionSizeParser::startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   Parser::startFunction(theModel, theFunction, theData);
   theData->set((string) "mcCabe", 0);
 }
 
-void FunctionSizeParser::endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void FunctionSizeParser::endFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   Parser::endFunction(theModel, theFunction, theData);
   stringstream ss;

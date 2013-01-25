@@ -17,6 +17,9 @@ string ProjectNode::t() {return "ProjectHasId";};
 string FileNode::t() {return "ProjectHasFile";};
 string FunctionNode::t() {return "FileDeclaresFunction";};
 string VariableNode::t() {return "FileDeclaresVariable";};
+string ClassNode::t() {return "FileDeclaresClass";};
+string MethodNode::t() {return "ClassContainsMethod";};
+string AttributeNode::t() {return "ClassContainsAttribute";};
 
 // Parser defined Node types
 string CallNode::t() {return "FunctionCallsFunction";};

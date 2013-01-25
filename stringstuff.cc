@@ -5,10 +5,17 @@
 
 void StringStuff::strSplit(vector<string> &theResult, const string &theString, const char &theSeparator)
 {
+  Debug::print(200, (string) "StringStuff::strSplit " + theString);
+
   int prev_pos=0;
   int pos=theString.find_first_of(theSeparator, 0);
 
-  Debug::print(200, (string) "StringStuff::strSplit " + theString);
+  int q1pos=theString.find_first_of('"',0);
+  int q2pos=q1pos;
+  if (q1pos!=string::npos) {
+    q2pos=theString.find_first_of('"',q1pos+1);
+  }
+
 
   // TODO: Something is volatile in here and causes the occasional segmentation fault. Probaly stack stuff
 
@@ -17,6 +24,17 @@ void StringStuff::strSplit(vector<string> &theResult, const string &theString, c
     theResult.push_back(lrtrim(subs));
     pos++;
     prev_pos=pos;
+
+    if ((pos>=q1pos) && (pos<=q2pos)) {
+      pos=q2pos+1;
+      
+      // Find next quote, if any
+      q1pos=theString.find_first_of('"',pos);
+      q2pos=q1pos;
+      if (q1pos!=string::npos) {
+	q2pos=theString.find_first_of('"',q1pos+1);
+      }
+    }
     pos=theString.find_first_of(theSeparator, pos);
   }
 

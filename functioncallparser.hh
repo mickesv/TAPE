@@ -19,10 +19,8 @@ public:
   }
 
   virtual void setId(const int &theId) { }; // Do not need any id.  
-  CXCursor* getCursor() { return &myCursor; };
-  virtual string t();
+  static string t();
 private:
-  CXCursor myCursor;
 };
 
 
@@ -30,8 +28,8 @@ class FunctionCallParser : public Parser
 {
 public:
   FunctionCallParser() {};
-  virtual void startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
-  virtual void endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData);
+  virtual void startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData);
+  virtual void endFunction(Model &theModel, ModelNode* theFunction, ParserData* theData);
 
   virtual CXChildVisitResult parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData *theData);  
 

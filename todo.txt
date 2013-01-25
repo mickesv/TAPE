@@ -1,0 +1,22 @@
+/* TODO
+ * - Add linkage to functioncalls
+ * - Have another go at StringStuff
+ * - !!! Fix stack/heap usage everywhere... I've become Java-sloppy...
+ * - Document how to create a new parser (=inherit from Parser, add to getParsers, add to config file, usage of ParserData*)
+ */
+
+
+DONE 2013-01-17: Fix bug in model/csvread when comment-field contains double equal signs, e.g. "operator==". This gets split and interpreted in the wrong way.
+
+DONE 2013-01-18: Find C++ Classes
+DONE 2013-01-18: Find C++ Methods
+DONE 2013-01-18: Find C++ Attributes
+DONE 2013-01-18: Parse C++ Methods
+
+Inheritance should create a node as well. ... or at least an attribute
+
+DONE 2013-01-25: Fix lookup so that C++ methods are found when looking for a method call.
+    One way to do this would be to create a new parser: CPlusPlusFunctionCallParser, that keeps track of variable declarations to keep track of the ones that are of "my" classes (and their types). Recurse into clang_callExpr, and a DeclRefExpr will show up to this variable, and then I can look up its type and find the right call.
+    NOT NECESSARY: clang_getCursorSemanticParent(clang_getCursorReferenced(theCursor))) marks the spot.
+
+Make sure that all hh-files are parsed first, to avoid the situation where class names are not found. Alternatively, run through the extraction phase twice to make sure that whatever is missed the first time gets caught the next time.

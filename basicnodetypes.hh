@@ -17,7 +17,7 @@ public:
     target=-1;
     setArg("name", theName);
   };
-  virtual string t();
+  static string t();
 };
 
 
@@ -31,8 +31,7 @@ public:
     setArg("name", theName);
     setArg("basePath", theBasePath);
   };  
-
-  virtual string t();
+  static string t();
 private:
 };
 
@@ -47,11 +46,9 @@ public:
     setArg("name", theName);
     myCursor=theCursor;
   }
-
-  CXCursor* getCursor() { return &myCursor; };  
-  virtual string t();
+  
+  static string t();
 private:
-  CXCursor myCursor;
 };
 
 class VariableNode : public ModelNode
@@ -65,13 +62,55 @@ public:
     myCursor=theCursor;
   }
 
-
-  CXCursor* getCursor() { return &myCursor; };
-  virtual string t();
-
+  static string t();
 private:
-  CXCursor myCursor;
+};
 
+
+// C++ stuff below
+class ClassNode : public ModelNode
+{
+public:
+  ClassNode(const CXCursor &theCursor, const string &theName, const int &theFileId) {
+    type=t();
+    source=theFileId;
+    target=-1;
+    setArg("name", theName);
+    myCursor=theCursor;
+  }
+
+  static string t();
+private:
+};
+
+class MethodNode : public ModelNode
+{
+public:
+  MethodNode(const CXCursor &theCursor, const string &theName, const int &theClassId) {
+    type=t();
+    source=theClassId;
+    target=-1;
+    setArg("name", theName);
+    myCursor=theCursor;
+  }
+
+  static string t();
+private:
+};
+
+class AttributeNode : public ModelNode
+{
+public:
+  AttributeNode(const CXCursor &theCursor, const string &theName, const int &theClassId) {
+    type=t();
+    source=theClassId;
+    target=-1;
+    setArg("name", theName);
+    myCursor=theCursor;
+  }
+
+  static string t();
+private:
 };
 
 

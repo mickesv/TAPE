@@ -1,6 +1,7 @@
 #ifndef MODEL_HH
 #define MODEL_HH
 
+#include <clang-c/Index.h>
 #include <string>
 #include <set>
 #include <map>
@@ -10,7 +11,7 @@
 class ModelNode
 {
 public:
-  virtual string t();
+  static string t();
   string type;
   int source;
   int target;
@@ -28,9 +29,10 @@ public:
 
   string toString(const char sep=';', const char subsep=',');
 
+  CXCursor* getCursor() { return &myCursor; };
 protected:
   void parseArgs(map<string, string> &argList, const string &theArgs);
-
+  CXCursor myCursor;
 private:
 };
 

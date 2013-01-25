@@ -5,13 +5,13 @@
 
 using namespace std;
 
-void LoopdepthParser::startFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void LoopdepthParser::startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   Parser::startFunction(theModel, theFunction, theData);
   theData->set("maxLoopDepth", 0);
 }
 
-void LoopdepthParser::endFunction(Model &theModel, FunctionNode* theFunction, ParserData* theData)
+void LoopdepthParser::endFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
   Parser::endFunction(theModel, theFunction, theData);
 }

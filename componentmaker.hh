@@ -34,7 +34,7 @@ public:
     setArg("name", theName);
   }
 
-  virtual string t();
+  static string t();
 private:
 };
 
@@ -49,7 +49,7 @@ public:
   }
 
   virtual void setId(const int &theId) { }; // Do not need any id.    
-  virtual string t();
+  static string t();
 private:
 };
 
@@ -65,7 +65,7 @@ public:
   }
 
   virtual void setId(const int &theId) { }; // Do not need any id.  
-  virtual string t();
+  static string t();
 
 private:
 };

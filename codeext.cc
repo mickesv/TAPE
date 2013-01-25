@@ -39,7 +39,7 @@ void addBasics(Model &theModel, Config &theConfig)
 void addDeclarations(Model &theModel, Config &theConfig)
 {
   set<ModelNode*>* theFiles=theModel.getNodes();
-  theModel.filterByType(*theFiles, "ProjectHasFile");
+  theModel.filterByType(*theFiles, FileNode::t());
   Extractor e(theModel, theConfig);
 
   for(set<ModelNode*>::iterator i=theFiles->begin(); i!=theFiles->end(); i++) {
@@ -50,20 +50,22 @@ void addDeclarations(Model &theModel, Config &theConfig)
 void startParsing(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
 {
   set<ModelNode*>* theFunctions=theModel.getNodes();
-  theModel.filterByType(*theFunctions,"FileDeclaresFunction");
-  Extractor e(theModel, theConfig);
+  theModel.filterByType(*theFunctions, FunctionNode::t());
 
+  set<ModelNode*>* theMethods=theModel.getNodes();
+  theModel.filterByType(*theMethods, MethodNode::t());
+
+  Extractor e(theModel, theConfig);
+  Debug::print(3, " Parsing C Functions");
   for(set<ModelNode*>::iterator i=theFunctions->begin(); i!=theFunctions->end(); i++) {
-    e.parseFunction(theParsers, (FunctionNode*) (*i));
+    e.parseFunction(theParsers, (*i));
+  }
+  Debug::print(3, " Parsing C++ Methods");
+  for(set<ModelNode*>::iterator i=theMethods->begin(); i!=theMethods->end(); i++) {
+    e.parseFunction(theParsers, (*i));
   }  
 }
 
-/* TODO
- * - Add linkage to functioncalls
- * - Have another go at StringStuff
- * - !!! Fix stack/heap usage everywhere... I've become Java-sloppy...
- * - Document how to create a new parser (=inherit from Parser, add to getParsers, add to config file, usage of ParserData*)
- */
 
 int main(int argc, char* argv[])
 {

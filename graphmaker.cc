@@ -8,6 +8,11 @@
 #include "model.hh"
 #include "config.hh"
 
+#include "basicnodetypes.hh"
+#include "componentmaker.hh"
+#include "functioncallparser.hh"
+#include "gvaccessparser.hh"
+
 using namespace std;
 
 void GraphMaker::makeGraph(Model &theModel, Config &theConfig)
@@ -32,28 +37,28 @@ void GraphMaker::makeGraph(Model &theModel, Config &theConfig)
     if((*i)=="components") {
       Debug::print(2, " Extracting Components");
       if(theOptions.find("functions") != theOptions.end()) {
-	makeSubGraphs(theModel, theOptions, "Component", "ProjectHasComponent");
-	makeArches(theModel, theOptions, "ComponentCall", "ComponentCalls");
+	makeSubGraphs(theModel, theOptions, "Component", ComponentNode::t());
+	makeArches(theModel, theOptions, "ComponentCall", ComponentCallNode::t());
       } else {
-	makeNodes(theModel, theOptions, "Component", "ProjectHasComponent");
-	makeArches(theModel, theOptions, "ComponentCall", "ComponentCalls");
+	makeNodes(theModel, theOptions, "Component", ComponentNode::t());
+	makeArches(theModel, theOptions, "ComponentCall", ComponentCallNode::t());
       }
     }    
 
     if((*i)=="functions") {
       Debug::print(2, " Extracting Functions");
-      makeNodes(theModel, theOptions, "Function", "FileDeclaresFunction");
+      makeNodes(theModel, theOptions, "Function", FunctionNode::t());
     }
 
     if((*i)=="functionCalls") {
       Debug::print(2, " Extracting FunctionCalls");
-      makeArches(theModel, theOptions, "Call", "FunctionCallsFunction");
+      makeArches(theModel, theOptions, "Call", CallNode::t());
     }
 
     if((*i)=="globalVariableAccess") {
       Debug::print(2, " Extracting GlobalVariableAccess");
-      makeNodes(theModel, theOptions, "Global Variable", "FileDeclaresVariable");
-      makeArches(theModel, theOptions, "GVAccess", "FunctionAccessVariable");
+      makeNodes(theModel, theOptions, "Global Variable", VariableNode::t());
+      makeArches(theModel, theOptions, "GVAccess", GlobalVariableAccessNode::t());
     }    
   }
 
@@ -117,7 +122,7 @@ void GraphMaker::makeSubGraphs(Model &theModel, map<string,bool> &theOptions, co
 
     if (theOptions.find("functions")!=theOptions.end()) {
       set<ModelNode*>* theFunctions=theModel.getNodes();
-      theModel.filterByType(*theFunctions, "ComponentContains");
+      theModel.filterByType(*theFunctions, ComponentContainsNode::t());
       theModel.filterBySource(*theFunctions, (*i)->target);
 
       for(set<ModelNode*>::iterator j=theFunctions->begin(); j!=theFunctions->end(); j++) {

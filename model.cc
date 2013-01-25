@@ -198,12 +198,26 @@ string ModelNode::getArg(const string &theArgName)
   if (args.find(theArgName)==args.end()) {
     return "";
   }
-  return args[theArgName];
+
+  string myS=args[theArgName];
+  if ((myS[0]=='"') &&
+      (myS[myS.length()-1]=='"')) {
+    myS.erase(0,1);
+    myS.erase(myS.length()-1,1);
+  }
+
+  return myS;
 }
 
 void ModelNode::setArg(const string &theArgName, const string &theValue)
 {
-  args[theArgName]=theValue;
+  string* myS=new string(theValue);
+  if (myS->find('=')!=string::npos) {
+    myS->insert(0, 1, '"');
+    myS->append(1, '"');
+  }
+
+  args[theArgName]=*myS;
 }
 
 void ModelNode::parseArgs(map<string, string> &argList, const string &theArgs)
