@@ -48,19 +48,20 @@ void GraphMaker::makeGraph(Model &theModel, Config &theConfig)
     if ((*i)=="classes") {
       Debug::print(2, " Extracting Classes");
       makeClassNodes(theModel, theOptions);
+      makeClassInheritanceArches(theModel, theOptions);
     }
 
 
     if((*i)=="functions") {
       Debug::print(2, " Extracting Functions");
       makeNodes(theModel, theOptions, "Function", FunctionNode::t());
-      if (theOptions["classes"]!=true) {
+      if (theOptions.find("classes")==theOptions.end()) {
 	makeNodes(theModel, theOptions, "Method", MethodNode::t());
       }
     }
 
     if((*i)=="functionCalls") {
-      if(theOptions["classes"]==true) {
+      if(theOptions.find("classes")!=theOptions.end()) {
 	Debug::print(2, " Extracting Method Calls");
 	makeClassArches(theModel, theOptions);
       } else {
@@ -127,6 +128,26 @@ void GraphMaker::makeClassNodes(Model &theModel, map<string,bool> &theOptions)
   
 }
 
+void GraphMaker::makeClassInheritanceArches(Model &theModel, map<string,bool> &theOptions)
+{
+  set<ModelNode*>* theNodes=theModel.getNodes();
+  theModel.filterByType(*theNodes,InheritanceNode::t());
+  int callerClass=-1;
+  int calledClass=-1;
+
+  *myFile << "// Inheritance Arches" << endl;
+  for(set<ModelNode*>::iterator i=theNodes->begin(); i!=theNodes->end(); i++) {
+    Debug::print(100, (string) "  GeneratingInheritance " + (*i)->toString());
+    *myFile << (*i)->source << "->"
+	    << (*i)->target
+	    << " [label=\"<<Inherits>>\", arrowhead=\"empty\"];"<< endl;
+  }
+
+  *myFile << endl;
+
+}
+
+
 void GraphMaker::makeClassArches(Model &theModel, map<string,bool> &theOptions)
 {
   set<ModelNode*>* theNodes=theModel.getNodes();
@@ -177,12 +198,62 @@ void GraphMaker::makeClassArches(Model &theModel, map<string,bool> &theOptions)
 
 	*myFile << callerClass << "->"
 		<< calledClass
-		<< " [label=\"<<MCall>>\"];"<< endl;
+		<< " [label=\"<<M_Call>>\"];"<< endl;
       }
     }
   }
 
   *myFile << endl;
+
+  *myFile << "// Regular function calls" << endl;
+  theNodes=theModel.getNodes();
+  theModel.filterByType(*theNodes, CallNode::t());
+  set<ModelNode*>* n2=theModel.getNodes();
+  theModel.filterByType(*n2,FunctionNode::t());
+  set<ModelNode*>* n3=theModel.getNodes();
+  theModel.filterByType(*n3,MethodNode::t());
+
+  for(set<ModelNode*>::iterator i=theNodes->begin(); i!=theNodes->end(); i++) {
+
+    if ((*i)->source==-1 ||
+	(*i)->target==-1) {
+      continue;
+    }
+    
+    int mSource=-1;
+    int mTarget=-1;
+
+    for(set<ModelNode*>::iterator k=n2->begin(); k!=n2->end(); k++) {
+      if((*k)->target==(*i)->source) {
+	mSource=(*i)->source;
+      }
+
+      if((*k)->target==(*i)->target) {
+	mTarget=(*i)->target;
+      }
+
+    } 
+
+    if (mTarget==-1) { // Not a call to a function. Find the class instead
+      for(set<ModelNode*>::iterator k=n3->begin(); k!=n3->end(); k++) {
+	if((*k)->target==(*i)->target) {
+	  mTarget=(*k)->source;
+	}
+      }
+    }
+
+
+    if (mSource==-1) {
+      continue;
+    }
+
+    *myFile << mSource << "->"	  
+	    << mTarget
+	    << " [label=\"<<Call>>\"];"<< endl;
+      
+  }
+  *myFile << endl;
+  
 
 }
 
@@ -199,7 +270,12 @@ void GraphMaker::makeNodes(Model &theModel, map<string,bool> &theOptions, const 
     }
     
     *myFile << (*i)->target
-	    << " [label=\"<<" << theStereotype << ">> " << (*i)->getArg("name") << "\"];" << endl;
+	    << " [label=\"<<" << theStereotype << ">> " << (*i)->getArg("name") << flush;
+
+    if (theOptions.find("classes")==theOptions.end()) {
+      *myFile << "::" << (*i)->getArg("class") << flush;
+    }
+    *myFile << "\"];" << endl;
   }
   *myFile << endl;
 }

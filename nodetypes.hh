@@ -18,6 +18,7 @@ string FileNode::t() {return "ProjectHasFile";};
 string FunctionNode::t() {return "FileDeclaresFunction";};
 string VariableNode::t() {return "FileDeclaresVariable";};
 string ClassNode::t() {return "FileDeclaresClass";};
+string InheritanceNode::t() {return "ClassInheritsClass";};
 string MethodNode::t() {return "ClassContainsMethod";};
 string AttributeNode::t() {return "ClassContainsAttribute";};
 

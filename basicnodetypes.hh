@@ -32,7 +32,6 @@ public:
     setArg("basePath", theBasePath);
   };  
   static string t();
-private:
 };
 
 
@@ -63,7 +62,6 @@ public:
   }
 
   static string t();
-private:
 };
 
 
@@ -80,8 +78,25 @@ public:
   }
 
   static string t();
-private:
 };
+
+class InheritanceNode : public ModelNode
+{
+public:
+  InheritanceNode(const CXCursor &theCursor, const string &theName, const string &theBaseClass, const int &theClassId, const int &theBaseClassId) {
+    type=t();
+    source=theClassId;
+    target=theBaseClassId;
+    setArg("name", theName);
+    setArg("baseClass", theBaseClass);
+    myCursor=theCursor;
+  }
+
+  virtual void setId(const int &theId) { };
+  virtual void findMissing(Model &theModel, Config &theConfig);
+  static string t();
+};
+
 
 class MethodNode : public ModelNode
 {
@@ -95,7 +110,7 @@ public:
   }
 
   static string t();
-private:
+  virtual void findMissing(Model &theModel, Config &theConfig);
 };
 
 class AttributeNode : public ModelNode
@@ -110,7 +125,7 @@ public:
   }
 
   static string t();
-private:
+  virtual void findMissing(Model &theModel, Config &theConfig);
 };
 
 

@@ -38,7 +38,7 @@ void Extractor::parseFunction(set<Parser*> &theParsers, ModelNode* theFunction)
   myParsers=theParsers;
   myParserData=new ParserData(theFunction);
 
-  Debug::print(3, (string) " Parsing Function " + theFunction->getArg("name"));
+  Debug::print(2, (string) " Parsing Function " + theFunction->getArg("name"));
   
   // Tell everyone that we are starting
   Debug::print(100, "   Starting up parsers");
@@ -98,10 +98,40 @@ CXChildVisitResult Extractor::declarationsVisitor(CXCursor theCursor, CXCursor t
     // C++ Classes
 
     string name = clang_getCString(clang_getCursorSpelling(theCursor));
+    Debug::print(100, (string) "  Found Class " + name);
     ClassNode* n= new ClassNode(theCursor, name,  This->myParserData->myNode->target);
     This->myModelPtr->add(n);
 
     return CXChildVisit_Recurse; // Recurse to find inlined methods
+  } else if ( theCursor.kind==CXCursor_CXXBaseSpecifier ) {
+    // C++ Inheritance
+
+    string name = clang_getCString(clang_getCursorSpelling(theCursor));
+    name=name.substr(6);
+    string parentName = clang_getCString(clang_getCursorSpelling(theParent));
+
+    Debug::print(100, (string) "  Found Inheritance " + parentName + " inherits from " + name);
+
+    // Look for the Id's
+    set<ModelNode*>* theNodes=This->myModelPtr->getNodes();
+    This->myModelPtr->filterByType(*theNodes, ClassNode::t());        
+    This->myModelPtr->filterByArg(*theNodes, "name", parentName);        
+    int source=-1;
+    if (!theNodes->empty()) {
+      source=(*(theNodes->begin()))->target;
+    }
+
+    theNodes=This->myModelPtr->getNodes();
+    This->myModelPtr->filterByType(*theNodes, ClassNode::t());        
+    This->myModelPtr->filterByArg(*theNodes, "name", name);        
+    int target=-1;
+    if (!theNodes->empty()) {
+      target=(*(theNodes->begin()))->target;
+    }
+
+    InheritanceNode* n= new InheritanceNode(theParent, parentName, name, source, target);
+    This->myModelPtr->add(n);
+
   } else if ( filename==myFullName &&
 	      (theCursor.kind==CXCursor_CXXMethod ||
 	       theCursor.kind==CXCursor_Constructor ||

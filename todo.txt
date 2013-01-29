@@ -16,11 +16,19 @@ DONE 2013-01-25: Fix lookup so that C++ methods are found when looking for a met
     One way to do this would be to create a new parser: CPlusPlusFunctionCallParser, that keeps track of variable declarations to keep track of the ones that are of "my" classes (and their types). Recurse into clang_callExpr, and a DeclRefExpr will show up to this variable, and then I can look up its type and find the right call.
     NOT NECESSARY: clang_getCursorSemanticParent(clang_getCursorReferenced(theCursor))) marks the spot.
 DONE 2013-01-25: First attempt at making a decent class graph in GraphViz.
+DONE 2013-01-29 Inheritance should create a node as well. ... or at least an attribute
+DONE? 2013-01-29 Make sure that all hh-files are parsed first, to avoid the situation where class names are not found. Alternatively, run through the extraction phase twice to make sure that whatever is missed the first time gets caught the next time.
+DONE 2013-01-29 Implement second extractor pass on those posts that have a -1 in them...
+DONE 2013-01-29 Tidy up grmaker so that class scope is printed as well when I only print methods (and do not use the option "classes")
 
-Inheritance should create a node as well. ... or at least an attribute
-
-Make sure that all hh-files are parsed first, to avoid the situation where class names are not found. Alternatively, run through the extraction phase twice to make sure that whatever is missed the first time gets caught the next time.
 
 Strange method names messes up the dot file (e.g. "operator<"). Need to parse and escape everything before putting it into the dot...
 
-Tidy up grmaker so that class scope is printed as well when I only print methods (and do not use the option "classes")
+
+
+Overridden methods, try this one: CINDEX_LINKAGE void clang_getOverriddenCursors 	( 	CXCursor  	cursor,
+		CXCursor **  	overridden,
+		unsigned *  	num_overridden 
+	) 		
+
+

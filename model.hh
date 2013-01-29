@@ -8,6 +8,8 @@
 #include <vector>
 #include "config.hh"
 
+class Model;
+
 class ModelNode
 {
 public:
@@ -23,6 +25,7 @@ public:
   bool operator<(const ModelNode &theNode) const;
 
   virtual void setId(const int &theId) { target=theId;};
+  virtual void findMissing(Model &theModel, Config &theConfig) {};
 
   string getArg(const string &theArgName);
   void setArg(const string &theArgName, const string &theValue);

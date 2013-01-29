@@ -3,7 +3,7 @@ CLANGINC=/opt/local/libexec/llvm-3.1/include
 CFLAGS=-g -L$(CLANGLIB) -I$(CLANGINC)
 CC=g++
 PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o
-COMMON= config.o stringstuff.o model.o csvfile.o debug.o
+COMMON= config.o stringstuff.o model.o csvfile.o debug.o basicnodetypes.o
 CEOBJECTS=codeext.o extractor.o $(COMMON) $(PARSERS)
 GRMOBJECTS=grmaker.o graphmaker.o $(COMMON)
 #GRAOBJECTS=granalyse.o componentmaker.o $(COMMON)
@@ -43,8 +43,8 @@ gawk: all
 	./grmaker cfgFile=gawk.cfg
 
 this: all
-	./codeext cfgFile=this.cfg
-#	./grmaker cfgFile=this.cfg debugLevel=0
+#	./codeext cfgFile=this.cfg
+	./grmaker cfgFile=this.cfg
 
 clean:
 	rm *.o
