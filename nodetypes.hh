@@ -28,6 +28,7 @@ string GlobalVariableAccessNode::t() {return "FunctionAccessVariable";};
 string ComponentNode::t() {return "ProjectHasComponent";};
 string ComponentContainsNode::t() {return "ComponentContains";};
 string ComponentCallNode::t() {return "ComponentCalls";};
+//string AttributeAccessNode::t() {return "MethodAccessAttribute";};
 
 
 #endif

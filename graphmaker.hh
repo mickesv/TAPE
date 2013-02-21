@@ -22,6 +22,8 @@ public:
   void makeSubGraphs(Model &theModel, map<string,bool> &theOptions, const string &theStereotype, const string &theFilter);
   void setOutput(iostream* theFile);
 private:
+  string safeForPrint(const string &theString) const;
+
   Model* myModelPtr;
   Config* myConfigPtr;
   iostream* myFile;

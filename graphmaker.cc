@@ -97,7 +97,7 @@ void GraphMaker::makeClassNodes(Model &theModel, map<string,bool> &theOptions)
     
     *myFile << (*i)->target
 	    << " [shape=\"record\""
-	    << "\n   label=\"{class " << (*i)->getArg("name") << "\\n|" << flush;
+	    << "\n   label=\"{class " << safeForPrint((*i)->getArg("name")) << "\\n|" << flush;
       
     // add attributes
     set<ModelNode*>* n=theModel.getNodes();
@@ -107,7 +107,7 @@ void GraphMaker::makeClassNodes(Model &theModel, map<string,bool> &theOptions)
       if ((*j)->target==-1) {
 	continue;
       }
-      *myFile << (*j)->getArg("name") << "\\l" << flush;
+      *myFile << safeForPrint((*j)->getArg("name")) << "\\l" << flush;
     }
     *myFile << "|" << flush;
 
@@ -119,7 +119,7 @@ void GraphMaker::makeClassNodes(Model &theModel, map<string,bool> &theOptions)
       if ((*j)->target==-1) {
 	continue;
       }
-      *myFile << (*j)->getArg("name") << "\\l" << flush;
+      *myFile << safeForPrint((*j)->getArg("name")) << "\\l" << flush;
     }
 
     *myFile << "}\"];" << endl;
@@ -270,10 +270,10 @@ void GraphMaker::makeNodes(Model &theModel, map<string,bool> &theOptions, const 
     }
     
     *myFile << (*i)->target
-	    << " [label=\"<<" << theStereotype << ">> " << (*i)->getArg("name") << flush;
+	    << " [label=\"<<" << theStereotype << ">> " << safeForPrint((*i)->getArg("name")) << flush;
 
     if (theOptions.find("classes")==theOptions.end()) {
-      *myFile << "::" << (*i)->getArg("class") << flush;
+      *myFile << "::" << safeForPrint((*i)->getArg("class")) << flush;
     }
     *myFile << "\"];" << endl;
   }
@@ -314,8 +314,8 @@ void GraphMaker::makeSubGraphs(Model &theModel, map<string,bool> &theOptions, co
     }
   
     *myFile << "subgraph cluster_" << (*i)->target << " {" << endl;
-    *myFile << " label=\"<<" << theStereotype << ">> " << (*i)->getArg("name") << "\\n"
-	    << " CType=" << (*i)->getArg("CType") << ", size=" << (*i)->getArg("size") << "\";" << endl;
+    *myFile << " label=\"<<" << theStereotype << ">> " << safeForPrint((*i)->getArg("name")) << "\\n"
+	    << " CType=" << (*i)->getArg("CType") << ", size=" << safeForPrint((*i)->getArg("size")) << "\";" << endl;
 
     if (theOptions.find("functions")!=theOptions.end()) {
       set<ModelNode*>* theFunctions=theModel.getNodes();
@@ -339,3 +339,17 @@ void GraphMaker::setOutput(iostream* theFile)
   myFile=theFile;
 }
 
+string GraphMaker::safeForPrint(const string &theString) const
+{
+  string s=theString;
+  string badchars="<>";
+  string::size_type pos=s.find_first_of(badchars);;
+
+  while(pos!=string::npos) {
+    s.insert(pos,"\\");
+    pos=s.find_first_of(badchars,pos+2);
+  }
+
+
+  return s;
+}
