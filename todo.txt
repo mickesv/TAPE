@@ -34,3 +34,6 @@ Overridden methods, try this one: CINDEX_LINKAGE void clang_getOverriddenCursors
 move function codeext.cc::secondPass into Extractor class
 
 Create a "VerboseParser" that does nothing but print out everything and recurse everything. This will be useful when creating new parsers and trying to figure out what is going on in a program.
+
+clang_getInclusions (CXTranslationUnit tu, CXInclusionVisitor visitor, CXClientData client_data)
+ 	Visit the set of preprocessor inclusions in a translation unit. The visitor function is called with the provided data for every included file. This does not include headers included by the PCH file (unless one is inspecting the inclusions in the PCH file itself). 

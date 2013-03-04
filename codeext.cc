@@ -1,3 +1,4 @@
+#include <clang-c/Index.h>
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -93,6 +94,12 @@ int main(int argc, char* argv[])
 
   // Start of tool-specific stuff
   // ------------------------------
+
+  // clang version
+
+  string clangVersion=clang_getCString(clang_getClangVersion());
+  Debug::print(3, (string) "Using " + clangVersion);
+
 
   // Decide which parsers to use
   Debug::print(1, "Loading parsers...");

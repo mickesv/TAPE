@@ -15,7 +15,6 @@ void Extractor::extractDeclarations(FileNode* theNode)
   char** clangargs;
   int clangargc=getClangArgs(clangargs);
 
-
   Debug::print(2, (string) " Extracting declarations from " + theNode->getArg("name"));
   CXTranslationUnit myTU = clang_createTranslationUnitFromSourceFile( myIdx, myFullName.c_str(), 
 								      clangargc, clangargs, 0, 0);
