@@ -31,3 +31,6 @@ Overridden methods, try this one: CINDEX_LINKAGE void clang_getOverriddenCursors
 	) 		
 
 
+move function codeext.cc::secondPass into Extractor class
+
+Create a "VerboseParser" that does nothing but print out everything and recurse everything. This will be useful when creating new parsers and trying to figure out what is going on in a program.
