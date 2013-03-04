@@ -43,7 +43,7 @@ gawk: all
 	./grmaker cfgFile=gawk.cfg
 
 this: all
-#	./codeext cfgFile=this.cfg
+	./codeext cfgFile=this.cfg
 	./grmaker cfgFile=this.cfg
 
 clean:
