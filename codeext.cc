@@ -6,6 +6,7 @@
 
 #include "config.hh"
 #include "model.hh"
+#include "warnings.hh"
 #include "basicnodetypes.hh"
 #include "parser.hh"
 #include "extractor.hh"
@@ -87,6 +88,7 @@ int main(int argc, char* argv[])
   // Generic start for the entire family of tools
   Config myConfig(argc, argv);
   Model myModel(myConfig);
+  Warnings::initialise(myConfig);
   Debug::setLevel(myConfig.getInt("debugLevel"));
   Debug::print(1, "----------------------------------------");
   Debug::print(1, (string) "Starting " + argv[0]);
@@ -99,7 +101,6 @@ int main(int argc, char* argv[])
 
   string clangVersion=clang_getCString(clang_getClangVersion());
   Debug::print(3, (string) "Using " + clangVersion);
-
 
   // Decide which parsers to use
   Debug::print(1, "Loading parsers...");

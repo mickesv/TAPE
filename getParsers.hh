@@ -13,6 +13,7 @@
 #include "functionsizeparser.hh"
 #include "gvaccessparser.hh"
 #include "verboseparser.hh"
+#include "parametercountparser.hh"
 
 using namespace std;
 
@@ -27,11 +28,12 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
 
   for(vector<string>::iterator i=theList.begin(); i!=theList.end(); i++) {
     
+    // I know I am inconsistent here; some parsers would like the config-objects, and others do not.
+    // I am pragmatic and let them have their way.
     if((*i)=="functionCalls") {
       Debug::print(2, " Loading FunctionCallParser");
       theParsers.insert(new FunctionCallParser());      
     }
-
 
     if((*i)=="loopDepth") {
       Debug::print(2, " Loading LoopdepthParser");
@@ -53,6 +55,10 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
       theParsers.insert(new VerboseParser());
     }
 
+    if((*i)=="parameterCount") {
+      Debug::print(2, " Loading ParameterCountParser");
+      theParsers.insert(new ParameterCountParser(theConfig));
+    }
 
   }    
 }
