@@ -12,6 +12,7 @@
 #include "loopdepthparser.hh"
 #include "functionsizeparser.hh"
 #include "gvaccessparser.hh"
+#include "verboseparser.hh"
 
 using namespace std;
 
@@ -45,6 +46,11 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
     if((*i)=="globalVariableAccess") {
       Debug::print(2, " Loading GlobalVariableAccessParser");
       theParsers.insert(new GVAccessParser());
+    }
+
+    if((*i)=="verbose") {
+      Debug::print(2, " Loading VerboseParser");
+      theParsers.insert(new VerboseParser());
     }
 
 

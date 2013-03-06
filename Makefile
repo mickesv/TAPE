@@ -2,13 +2,14 @@ CLANGLIB=/opt/local/libexec/llvm-3.1/lib
 CLANGINC=/opt/local/libexec/llvm-3.1/include
 CFLAGS=-g -L$(CLANGLIB) -I$(CLANGINC)
 CC=g++
-PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o
+PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o verboseparser.o
 COMMON= config.o stringstuff.o model.o csvfile.o debug.o basicnodetypes.o
 CEOBJECTS=codeext.o extractor.o $(COMMON) $(PARSERS)
 GRMOBJECTS=grmaker.o graphmaker.o $(COMMON)
 #GRAOBJECTS=granalyse.o componentmaker.o $(COMMON)
 GRAOBJECTS=granalyse.o componentmaker.o $(COMMON)
 
+# Speaking of build times; this rule is murder: a changed hh-file recompiles everything
 %.o: %.cc *.hh
 	$(CC) $(CFLAGS) -c $<
 
