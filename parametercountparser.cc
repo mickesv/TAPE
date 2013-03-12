@@ -21,13 +21,21 @@ void ParameterCountParser::endFunction(Model &theModel, ModelNode* theFunction, 
   Parser::endFunction(theModel, theFunction, theData);
   int pcount=theData->get("parameterCount");
   int maxPCount=myConfig->getInt("maxParameters");
+  int classMember=0;
+  if (theFunction->type==MethodNode::t()) {
+    classMember=1;
+  }
 
-  if (pcount>maxPCount) {
+  if ((classMember+pcount)>maxPCount) {
     Warnings* w=Warnings::getInstance();
     CXCursor* theFunctionCursor=theFunction->getCursor();
     stringstream s;
     s << "May use too many parameters. Threshold value is " << maxPCount << ". ";
-    s << "Current number of parameters is " << pcount << ".";
+    s << "Current number of parameters is " << pcount;
+    if (classMember!=0) {
+      s << " plus the *this pointer";
+    }
+    s << ".";
 
     w->addWarning(*theFunctionCursor, theData->getNode()->getArg("name"), s.str());
   }

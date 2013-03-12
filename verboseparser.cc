@@ -28,6 +28,7 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
 {
   string cname=clang_getCString(clang_getCursorDisplayName(theCursor));
   string ckind=clang_getCString(clang_getCursorKindSpelling(clang_getCursorKind(theCursor)));
+  string ctype=clang_getCString(clang_getTypeKindSpelling(clang_getCursorType(theCursor).kind));
   CXSourceLocation theLocation=clang_getCursorLocation(theCursor);
   unsigned* theLocLine=new unsigned();
   unsigned* theLocCol=new unsigned();
@@ -35,7 +36,7 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
     
   stringstream s;
   s << "Verbose: " << "(" << *theLocLine << "," << *theLocCol << ") ";
-  s << ckind << ":" << cname;
+  s << ckind << ":" << cname << ":" << ctype;
 
   Debug::print(1, (string) s.str());
 
