@@ -52,7 +52,7 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
 
     if((*i)=="verbose") {
       Debug::print(2, " Loading VerboseParser");
-      theParsers.insert(new VerboseParser());
+      theParsers.insert(new VerboseParser(theConfig));
     }
 
     if((*i)=="parameterCount") {

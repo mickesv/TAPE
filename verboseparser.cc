@@ -33,13 +33,76 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
   unsigned* theLocLine=new unsigned();
   unsigned* theLocCol=new unsigned();
   clang_getPresumedLocation(theLocation, NULL, theLocLine, theLocCol);
-    
+
+  // Basic printout
   stringstream s;
   s << "Verbose: " << "(" << *theLocLine << "," << *theLocCol << ") ";
   s << ckind << ":" << cname << ":" << ctype;
 
   Debug::print(1, (string) s.str());
 
+  // Check for range
+  if (myConfig->get("verboseRange")=="true") {
+    CXSourceRange theRange=clang_getCursorExtent(theCursor);
+    CXSourceLocation theStart=clang_getRangeStart(theRange);
+    CXSourceLocation theEnd=clang_getRangeEnd(theRange);
+    unsigned* theStartLine=new unsigned();
+    unsigned* theStartCol=new unsigned();
+    unsigned* theEndLine=new unsigned();
+    unsigned* theEndCol=new unsigned();
+    
+    clang_getPresumedLocation(theStart, NULL, theStartLine, theStartCol);
+    clang_getPresumedLocation(theEnd, NULL, theEndLine, theEndCol);
+    
+    s.str("");
+    s.clear();
+    s << "Verbose:  Range start " << *theStartLine << "," << *theStartCol;
+    s << " end " << *theEndLine << "," << *theEndCol;
+    
+    Debug::print(1, (string) s.str());
+  }
+
+  // Just an experiment, to see if I could find the source code for the current statement.
+  /*
+  {
+    const char *startBuf, *endBuf;
+    unsigned startLine, startColumn, endLine, endColumn;
+    clang_getDefinitionSpellingAndExtent(theCursor, &startBuf, &endBuf,
+					 &startLine, &startColumn,
+					 &endLine, &endColumn);
+    
+    s.str("");
+    s.clear();
+    s << "(" << startLine << ":" << startColumn << ")->(" << endLine << ":" << endColumn << ") ";
+    while (startBuf <= endBuf) {
+      s << *startBuf++;
+    }
+    Debug::print(1, (string) s.str());
+  }
+  */
+
+  // Fool around with tokenization
+  {
+    CXSourceRange theRange = clang_getCursorExtent(theCursor);
+    CXToken* theTokens;
+    unsigned numTokens;
+    CXTranslationUnit theTU=clang_Cursor_getTranslationUnit(theCursor);
+    clang_tokenize(theTU, theRange, &theTokens, &numTokens);
+
+    s.str("");
+    s.clear();
+    s << "Verbose:  Tokens: #";
+    
+    for (unsigned i = 0; i < numTokens; i++) {
+      // Have a look at the tokens
+      string tname=clang_getCString(clang_getTokenSpelling(theTU, theTokens[i]));
+      s << tname << "#";
+    }
+
+    Debug::print(1, (string) s.str());
+
+    clang_disposeTokens(theTU, theTokens, numTokens);
+  }
   // Always recurse
   return CXChildVisit_Recurse;
 }

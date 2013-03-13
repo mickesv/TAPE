@@ -39,3 +39,11 @@ clang_getInclusions (CXTranslationUnit tu, CXInclusionVisitor visitor, CXClientD
  	Visit the set of preprocessor inclusions in a translation unit. The visitor function is called with the provided data for every included file. This does not include headers included by the PCH file (unless one is inspecting the inclusions in the PCH file itself). 
 
 Make extractors pluggable as well (as with the parsers) so there is CExtractor, CPPExtractor, PPExtractor
+
+
+Notes on call chain parser:
+ When I hit a statement, record the range of it and push on a stack. If it is a call chain, it will be recursed step by step, and I can (probably) use "isWithinCurrentCompound"  (or something similar) to check whether I am still within the top of the stack. If I am (and I also need to exclude the possibility that I have actually descended into a compound), I can then start counting "->" and "." tokens (that I get from clang_tokenize()).
+
+
+Notes on read or write of variables:
+ Since I can tokenize statements, I can also start looking for what is an assignment and what is not.
