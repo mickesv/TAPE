@@ -14,6 +14,7 @@
 #include "gvaccessparser.hh"
 #include "verboseparser.hh"
 #include "parametercountparser.hh"
+#include "callchainparser.hh"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
   for(vector<string>::iterator i=theList.begin(); i!=theList.end(); i++) {
     
     // I know I am inconsistent here; some parsers would like the config-objects, and others do not.
-    // I am pragmatic and let them have their way.
+    // I am pragmatic (for now) and let them have their way.
     if((*i)=="functionCalls") {
       Debug::print(2, " Loading FunctionCallParser");
       theParsers.insert(new FunctionCallParser());      
@@ -58,6 +59,11 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
     if((*i)=="parameterCount") {
       Debug::print(2, " Loading ParameterCountParser");
       theParsers.insert(new ParameterCountParser(theConfig));
+    }
+
+    if((*i)=="callChains") {
+      Debug::print(2, " Loading CallChainParser");
+      theParsers.insert(new CallChainParser(theConfig));
     }
 
   }    

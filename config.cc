@@ -184,7 +184,7 @@ void Config::readFile(string theFileName)
 
 void Config::debugPrint(const int theLevel)
 {
-  if (theLevel>Debug::myLevel) { return; }
+  if (!Debug::debugLevel(theLevel)) { return; }
 
   // Once I am done, print out all my values, for debugging purposes.
   Debug::print(theLevel, "----------\nConfiguration:");

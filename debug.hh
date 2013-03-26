@@ -10,7 +10,9 @@ public:
   static void print(const int theLevel, const std::string& theMessage);  
   static void print(const int theLevel, const int theMessage);  
   static void setLevel(const int theLevel);
+  static bool debugLevel(const int theLevel);
 
+private:
   static int myLevel;
 };
 

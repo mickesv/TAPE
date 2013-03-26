@@ -120,8 +120,9 @@ int main(void)
   theC.c->t();
   theC.c->f()->t();
   theC.c->ff(foo())->t();
+  theC.c->ff(theC.c->qwoo(1))->t(); // Clang makes it to 8 (+/-1) calls and member references on this line.
   theC.c->c->t();
-  theC.c->c->c->qq=1;
+  theC.c->c->c->qq=foo();
 
 
   /*

@@ -28,3 +28,8 @@ void Debug::setLevel(const int theLevel)
 {
   Debug::myLevel=theLevel;
 }
+
+bool Debug::debugLevel(const int theLevel)
+{
+  return (Debug::myLevel>=theLevel);
+}

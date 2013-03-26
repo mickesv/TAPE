@@ -42,7 +42,7 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
   Debug::print(1, (string) s.str());
 
   // Check for range
-  if (myConfig->get("verboseRange")=="true") {
+  if (Debug::debugLevel(2)) {
     CXSourceRange theRange=clang_getCursorExtent(theCursor);
     CXSourceLocation theStart=clang_getRangeStart(theRange);
     CXSourceLocation theEnd=clang_getRangeEnd(theRange);
@@ -59,7 +59,7 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
     s << "Verbose:  Range start " << *theStartLine << "," << *theStartCol;
     s << " end " << *theEndLine << "," << *theEndCol;
     
-    Debug::print(1, (string) s.str());
+    Debug::print(2, (string) s.str());
   }
 
   // Just an experiment, to see if I could find the source code for the current statement.
@@ -82,6 +82,7 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
   */
 
   // Fool around with tokenization
+  if (Debug::debugLevel(3))
   {
     CXSourceRange theRange = clang_getCursorExtent(theCursor);
     CXToken* theTokens;
@@ -99,7 +100,7 @@ CXChildVisitResult VerboseParser::parse(const CXCursor &theCursor, const CXCurso
       s << tname << "#";
     }
 
-    Debug::print(1, (string) s.str());
+    Debug::print(3, (string) s.str());
 
     clang_disposeTokens(theTU, theTokens, numTokens);
   }

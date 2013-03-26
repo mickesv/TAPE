@@ -137,7 +137,7 @@ void Model::filterByArg(set<ModelNode*> &theNodes, const string &theArgName, con
 
 void Model::debugPrint(int theLevel)
 {
-  if(theLevel>Debug::myLevel) { return; }
+  if(!Debug::debugLevel(theLevel)) { return; }
 
   for(set<ModelNode*>::iterator i=myNodes.begin(); i!=myNodes.end(); i++) {
     Debug::print(theLevel,(*i)->toString());
