@@ -2,7 +2,7 @@ CLANGLIB=/opt/local/libexec/llvm-3.1/lib
 CLANGINC=/opt/local/libexec/llvm-3.1/include
 CFLAGS=-g -L$(CLANGLIB) -I$(CLANGINC)
 CC=g++
-PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o verboseparser.o parametercountparser.o callchainparser.o
+PARSERS=parser.o functioncallparser.o loopdepthparser.o functionsizeparser.o gvaccessparser.o verboseparser.o parametercountparser.o callchainparser.o attributeaccessparser.o
 COMMON= config.o stringstuff.o model.o csvfile.o debug.o basicnodetypes.o warnings.o
 CEOBJECTS=codeext.o extractor.o $(COMMON) $(PARSERS)
 GRMOBJECTS=grmaker.o graphmaker.o $(COMMON)
@@ -28,10 +28,10 @@ all: codeext grmaker granalyse
 go: all
 	./codeext
 	./granalyse debugLevel=0
-	@echo "----------"
-	@echo "Final Model:"
-	@cat msvtest.csv
-	@echo "----------"
+#	@echo "----------"
+#	@echo "Final Model:"
+#	@cat msvtest.csv
+#	@echo "----------"
 	./grmaker debugLevel=0
 
 

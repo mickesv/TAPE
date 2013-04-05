@@ -85,10 +85,10 @@ class InheritanceNode : public ModelNode
 public:
   InheritanceNode(const CXCursor &theCursor, const string &theName, const string &theBaseClass, const int &theClassId, const int &theBaseClassId) {
     type=t();
-    source=theClassId;
-    target=theBaseClassId;
+    source=theBaseClassId;
+    target=theClassId;
     setArg("name", theName);
-    setArg("baseClass", theBaseClass);
+    setArg("class", theBaseClass); // Would rather call this "BaseClass", but keeps it as "class" for consistency.
     myCursor=theCursor;
   }
 

@@ -22,10 +22,11 @@ DONE 2013-01-29 Implement second extractor pass on those posts that have a -1 in
 DONE 2013-01-29 Tidy up grmaker so that class scope is printed as well when I only print methods (and do not use the option "classes")
 DONE 2013-02-21 Strange method names messes up the dot file (e.g. "operator<"). Need to parse and escape everything before putting it into the dot...
 DONE 2013-03-06 Create a "VerboseParser" that does nothing but print out everything and recurse everything. This will be useful when creating new parsers and trying to figure out what is going on in a program.
-
+DONE 2013-03-25 Call Chain Parser
+DONE 2013-04-05 First version of attributeAccessParser.
 --------------------
 
-AttributeAccessParser
+AttributeAccessParser: Currently assumes that only member functions access attributes (=NOT TRUE); I've overengineered the stuff, need to back up one step...
 
 Overridden methods, try this one: CINDEX_LINKAGE void clang_getOverriddenCursors 	( 	CXCursor  	cursor,
 		CXCursor **  	overridden,
@@ -41,47 +42,6 @@ clang_getInclusions (CXTranslationUnit tu, CXInclusionVisitor visitor, CXClientD
 Make extractors pluggable as well (as with the parsers) so there is CExtractor, CPPExtractor, PPExtractor
 
 
-Notes on call chain parser:
- When I hit a statement, record the range of it and push on a stack. If it is a call chain, it will be recursed step by step, and I can (probably) use "isWithinCurrentCompound"  (or something similar) to check whether I am still within the top of the stack. If I am (and I also need to exclude the possibility that I have actually descended into a compound), I can then start counting "->" and "." tokens (that I get from clang_tokenize()).
-
- 2013-03-25 ---
- The line:
-   theC.c->ff(foo())->t();
- gets parsed as:
-Verbose: (122,3) CallExpr:t:Void
-Verbose:  Range start 122,3 end 122,25
-Verbose:  Tokens: #theC#.#c#->#ff#(#foo#(#)#)#->#t#(#)#;#
-Verbose: (122,22) MemberRefExpr:t:Unexposed
-Verbose:  Range start 122,3 end 122,23
-Verbose:  Tokens: #theC#.#c#->#ff#(#foo#(#)#)#->#t#(#
-Verbose: (122,3) CallExpr:ff:Pointer
-Verbose:  Range start 122,3 end 122,20
-Verbose:  Tokens: #theC#.#c#->#ff#(#foo#(#)#)#->#
-Verbose: (122,11) MemberRefExpr:ff:Unexposed
-Verbose:  Range start 122,3 end 122,13
-Verbose:  Tokens: #theC#.#c#->#ff#(#
-Verbose: (122,8) UnexposedExpr:c:Pointer
-Verbose:  Range start 122,3 end 122,9
-Verbose:  Tokens: #theC#.#c#->#
-Verbose: (122,8) MemberRefExpr:c:Pointer
-Verbose:  Range start 122,3 end 122,9
-Verbose:  Tokens: #theC#.#c#->#
-Verbose: (122,3) DeclRefExpr:theC:Record
-Verbose:  Range start 122,3 end 122,7
-Verbose:  Tokens: #theC#.#
-Verbose: (122,14) CallExpr:foo:Int
-Verbose:  Range start 122,14 end 122,19
-Verbose:  Tokens: #foo#(#)#)#
-Verbose: (122,14) UnexposedExpr:foo:Pointer
-Verbose:  Range start 122,14 end 122,17
-Verbose:  Tokens: #foo#(#
-Verbose: (122,14) DeclRefExpr:foo:FunctionProto
-Verbose:  Range start 122,14 end 122,17
-Verbose:  Tokens: #foo#(#
-
- This is nice. This means that clang first takes care of the "outer" statement (theC.c->ff()->t()) and *then* deals with the "inner" statements. So: if I see a callExpr that contains "->" and "." tokens, I push this onto a que, and then take care of all other statements that are within this source range. Once I hit something outside the range, I am done with this full statement. Take the first element of the queue and blank out all the bits covered by subsequent elements. What remains is one call chain. Remove first element and re-do with the new first element of the queue.
- "blank out all the bits": This is slightly tricky because I may have several chains of tokens that look the same. (ex: q(a->b->c())->w(a->b->c()) will have two elements in the queue with the tokens for a->b->c() ). On the other hand; it does not matter since I do not need to follow the calls or anything, I just need to count the "->" and "."'s, and this count will be the same in any case.
- ---
 
 
 Notes on read or write of variables:

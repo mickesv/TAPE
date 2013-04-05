@@ -5,6 +5,7 @@
 #include "basicnodetypes.hh"
 #include "functioncallparser.hh"
 #include "gvaccessparser.hh"
+#include "attributeaccessparser.hh"
 #include "componentmaker.hh"
 
 // Keep these here to facilitate getting an overview of the different
@@ -18,7 +19,7 @@ string FileNode::t() {return "ProjectHasFile";};
 string FunctionNode::t() {return "FileDeclaresFunction";};
 string VariableNode::t() {return "FileDeclaresVariable";};
 string ClassNode::t() {return "FileDeclaresClass";};
-string InheritanceNode::t() {return "ClassInheritsClass";};
+string InheritanceNode::t() {return "ClassInheritsToClass";};
 string MethodNode::t() {return "ClassContainsMethod";};
 string AttributeNode::t() {return "ClassContainsAttribute";};
 
@@ -28,7 +29,7 @@ string GlobalVariableAccessNode::t() {return "FunctionAccessVariable";};
 string ComponentNode::t() {return "ProjectHasComponent";};
 string ComponentContainsNode::t() {return "ComponentContains";};
 string ComponentCallNode::t() {return "ComponentCalls";};
-//string AttributeAccessNode::t() {return "MethodAccessAttribute";};
+string AttributeAccessNode::t() {return "MethodAccessAttribute";};
 
 
 #endif

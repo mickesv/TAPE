@@ -9,14 +9,14 @@ void InheritanceNode::findMissing(Model &theModel, Config &theConfig)
   theModel.filterByType(*theNodes, ClassNode::t());        
 
   if (source==-1) {
-    theModel.filterByArg(*theNodes, "name", getArg("name"));
+    theModel.filterByArg(*theNodes, "name", getArg("class"));
     if (!theNodes->empty()) {
       source=(*(theNodes->begin()))->target;
     }    
   }
 
   if (target==-1) {
-    theModel.filterByArg(*theNodes, "name", getArg("baseClass"));
+    theModel.filterByArg(*theNodes, "name", getArg("name"));
     if (!theNodes->empty()) {
       target=(*(theNodes->begin()))->target;
     }

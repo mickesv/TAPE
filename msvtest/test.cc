@@ -83,9 +83,11 @@ class myClass {
     c=new myClass();
   }
   int qwoo(int w) {
+    qq=1;
     return 1;
   };
   int qqwoo(int shoo, char q, double w, int* p, int e) {
+    qq=2;
     return 1;
   }
   
@@ -108,6 +110,7 @@ class myClass {
 class mySubClass : public myClass {
  public:
   int qwww() {
+    qq=3;
     return 1;
   };
 };

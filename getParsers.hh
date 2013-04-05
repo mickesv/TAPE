@@ -15,6 +15,7 @@
 #include "verboseparser.hh"
 #include "parametercountparser.hh"
 #include "callchainparser.hh"
+#include "attributeaccessparser.hh"
 
 using namespace std;
 
@@ -64,6 +65,11 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
     if((*i)=="callChains") {
       Debug::print(2, " Loading CallChainParser");
       theParsers.insert(new CallChainParser(theConfig));
+    }
+
+    if((*i)=="attributeAccess") {
+      Debug::print(2, " Loading AttributeAccessParser");
+      theParsers.insert(new AttributeAccessParser());
     }
 
   }    
