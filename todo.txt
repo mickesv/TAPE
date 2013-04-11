@@ -28,6 +28,7 @@ DONE 2013-04-05 First version of attributeAccessParser.
 
 AttributeAccessParser: Currently assumes that only member functions access attributes (=NOT TRUE); I've overengineered the stuff, need to back up one step...
 
+
 Overridden methods, try this one: CINDEX_LINKAGE void clang_getOverriddenCursors 	( 	CXCursor  	cursor,
 		CXCursor **  	overridden,
 		unsigned *  	num_overridden 
@@ -41,9 +42,11 @@ clang_getInclusions (CXTranslationUnit tu, CXInclusionVisitor visitor, CXClientD
 
 Make extractors pluggable as well (as with the parsers) so there is CExtractor, CPPExtractor, PPExtractor
 
-
+Merge GVAccessParser into AttributeAccessParser since it uses a much cleaner interface.
 
 
 Notes on read or write of variables:
  Since I can tokenize statements, I can also start looking for what is an assignment and what is not.
  ... There is also a clue in that clang deals with the left-hand-side first, and then moves on to the right-hand side. Within each side, the order is then right to left (to resolve call chains). This leaves hints in the position of the current cursor. On the other hand, there is only one of the left-hand-sides that is actually being written to; the rest are just read.
+
+Fix bug where definitions and declarations of classes are both counted...

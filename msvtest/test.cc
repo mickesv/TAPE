@@ -111,6 +111,7 @@ class mySubClass : public myClass {
  public:
   int qwww() {
     qq=3;
+    aGlobalVariable=2;
     return 1;
   };
 };
