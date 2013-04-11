@@ -36,10 +36,6 @@ public:
   virtual CXChildVisitResult parse(const CXCursor &theCursor, const CXCursor &theParent, ParserData* theData);
 
 private:
-  string recurseSearch(ModelNode* theNode, string &theAttributeName);
-
-  ModelNode* myFunction;
-
   vector<AttributeAccessNode*> myUsages; 
 };
 
