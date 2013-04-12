@@ -4,8 +4,7 @@
 #include "model.hh"
 #include "basicnodetypes.hh"
 #include "functioncallparser.hh"
-#include "gvaccessparser.hh"
-#include "attributeaccessparser.hh"
+#include "variableaccessparser.hh"
 #include "componentmaker.hh"
 
 // Keep these here to facilitate getting an overview of the different
@@ -25,11 +24,11 @@ string AttributeNode::t() {return "ClassContainsAttribute";};
 
 // Parser defined Node types
 string CallNode::t() {return "FunctionCallsFunction";};
-string GlobalVariableAccessNode::t() {return "FunctionAccessVariable";};
+string GlobalVariableAccessNode::t() {return "FunctionAccessGlobalVariable";};
 string ComponentNode::t() {return "ProjectHasComponent";};
 string ComponentContainsNode::t() {return "ComponentContains";};
 string ComponentCallNode::t() {return "ComponentCalls";};
-string AttributeAccessNode::t() {return "MethodAccessAttribute";};
+string AttributeAccessNode::t() {return "FunctionAccessAttribute";};
 
 
 #endif

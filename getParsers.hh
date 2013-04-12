@@ -11,11 +11,10 @@
 #include "functioncallparser.hh"
 #include "loopdepthparser.hh"
 #include "functionsizeparser.hh"
-#include "gvaccessparser.hh"
 #include "verboseparser.hh"
 #include "parametercountparser.hh"
 #include "callchainparser.hh"
-#include "attributeaccessparser.hh"
+#include "variableaccessparser.hh"
 
 using namespace std;
 
@@ -47,11 +46,6 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
       theParsers.insert(new FunctionSizeParser());
     }
 
-    if((*i)=="globalVariableAccess") {
-      Debug::print(2, " Loading GlobalVariableAccessParser");
-      theParsers.insert(new GVAccessParser());
-    }
-
     if((*i)=="verbose") {
       Debug::print(2, " Loading VerboseParser");
       theParsers.insert(new VerboseParser(theConfig));
@@ -67,9 +61,9 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
       theParsers.insert(new CallChainParser(theConfig));
     }
 
-    if((*i)=="attributeAccess") {
-      Debug::print(2, " Loading AttributeAccessParser");
-      theParsers.insert(new AttributeAccessParser());
+    if((*i)=="variableAccess") {
+      Debug::print(2, " Loading VariableAccessParser");
+      theParsers.insert(new VariableAccessParser(theConfig));
     }
 
   }    

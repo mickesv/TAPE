@@ -24,9 +24,9 @@ DONE 2013-02-21 Strange method names messes up the dot file (e.g. "operator<"). 
 DONE 2013-03-06 Create a "VerboseParser" that does nothing but print out everything and recurse everything. This will be useful when creating new parsers and trying to figure out what is going on in a program.
 DONE 2013-03-25 Call Chain Parser
 DONE 2013-04-05 First version of attributeAccessParser.
+FIXED 2013-04-12 AttributeAccessParser: Currently assumes that only member functions access attributes (=NOT TRUE); I've overengineered the stuff, need to back up one step...
+DONE Merge GVAccessParser into AttributeAccessParser since it uses a much cleaner interface.
 --------------------
-
-AttributeAccessParser: Currently assumes that only member functions access attributes (=NOT TRUE); I've overengineered the stuff, need to back up one step...
 
 
 Overridden methods, try this one: CINDEX_LINKAGE void clang_getOverriddenCursors 	( 	CXCursor  	cursor,
@@ -42,7 +42,6 @@ clang_getInclusions (CXTranslationUnit tu, CXInclusionVisitor visitor, CXClientD
 
 Make extractors pluggable as well (as with the parsers) so there is CExtractor, CPPExtractor, PPExtractor
 
-Merge GVAccessParser into AttributeAccessParser since it uses a much cleaner interface.
 
 
 Notes on read or write of variables:
@@ -50,3 +49,4 @@ Notes on read or write of variables:
  ... There is also a clue in that clang deals with the left-hand-side first, and then moves on to the right-hand side. Within each side, the order is then right to left (to resolve call chains). This leaves hints in the position of the current cursor. On the other hand, there is only one of the left-hand-sides that is actually being written to; the rest are just read.
 
 Fix bug where definitions and declarations of classes are both counted...
+
