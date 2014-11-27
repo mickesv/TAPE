@@ -142,4 +142,12 @@ int main(int argc, char* argv[])
 
   Debug::print(1, (string) "End of " + argv[0]);
   Debug::print(1, "----------------------------------------");
+
+  // Summarise Warnings
+  int retval=Warnings::summarise();
+  if (myConfig.get("exitOnWarnings")=="true") {
+    return retval;
+  } else {
+    return 0;
+  }
 }

@@ -27,16 +27,16 @@ all: codeext grmaker granalyse
 
 go: all
 	./codeext
-	./granalyse debugLevel=0
+#	./granalyse debugLevel=0
 #	@echo "----------"
 #	@echo "Final Model:"
 #	@cat msvtest.csv
 #	@echo "----------"
-	./grmaker debugLevel=0
+#	./grmaker debugLevel=0
 
 
 gawk: all
-#	./codeext cfgFile=gawk.cfg
+	./codeext cfgFile=gawk.cfg
 	./granalyse cfgFile=gawk.cfg
 #	@echo "Final Model:"
 #	@cat gawk.csv

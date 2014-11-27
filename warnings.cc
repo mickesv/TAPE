@@ -6,6 +6,7 @@
 #include "config.hh"
 
 Warnings* Warnings::myInstance=0;
+int Warnings::myWarningsCount=0;
 
 Warnings::Warnings(Config &theConfig)
 {
@@ -34,7 +35,29 @@ void Warnings::addWarning(const CXCursor &theCursor, const string theFunctionNam
   ss << clang_getCString(*theFileName) << " (" << *theLocLine << "," << *theLocCol << ") ";
   ss << "in function " << theFunctionName << ": ";
   ss << theWarning;
-  Debug::print(1, (string) "WARNING " + ss.str());
-
+  Debug::print(1, (string) "WARNING: " + ss.str());
+  myWarningsCount++;
+  
   clang_disposeString(*theFileName);    
+}
+
+void Warnings::addWarning(const string &theFunctionName, const string &theWarning)
+{
+  stringstream ss;
+  ss << "in function " << theFunctionName << ": ";
+  ss << theWarning;
+  Debug::print(1, (string) "WARNING: " + ss.str());
+  myWarningsCount++;
+}
+
+int Warnings::summarise()
+{
+  if (myWarningsCount>0) {
+    stringstream s;
+    s << "There were " << myWarningsCount << " warning(s)." << endl;
+    Debug::print(1, (string) s.str());
+    return 1;
+  }
+
+  return 0;
 }

@@ -58,9 +58,18 @@ bool CallChainTokenList::isWithin(unsigned theL, unsigned theC)
 	     (theL < myEndLine)) {
     return true;
   }
+
+  return false; // Default
 }
 
 bool CallChainTokenList::isWithin(CallChainTokenList *theT) {
+  stringstream s;
+  s << "Checking boundaries"
+    << " (" << theT->myStartLine << ":" << theT->myStartCol << ")-("
+    << theT->myEndLine << ":" << theT->myEndCol << ")"
+    << " My values: (" << myStartLine << ":" << myStartCol << ")-("
+    << myEndLine << ":" << myEndCol << ")";    
+  Debug::print(100, (string) s.str());
   return (isWithin(theT->myStartLine, theT->myStartCol) &&
 	  isWithin(theT->myEndLine, theT->myEndCol));
 }
@@ -129,11 +138,12 @@ CXChildVisitResult CallChainParser::parse(const CXCursor &theCursor, const CXCur
   if (theFirst!=0) {
     if (!theFirst->isWithin(theEndLine, theEndCol)) {      
       // Outside this statement, Now I need to do something with my carefully accumulated queue
-      Debug::print(20, s.str() + " Fell out of statement. Let's parse the queue");
+      Debug::print(20, s.str() + " Fell out of statement. Let's parse the queue:");
       for(list<CallChainTokenList*>::iterator i=myList.begin(); i!=myList.end(); i++) {
 	Debug::print(20, (string) (*i)->myTokens);
       }
-
+      Debug::print(20, s.str() + " End of queue.");
+      
       // Get the last element
       while(!myList.empty()) {
 	CallChainTokenList *t=myList.back();
@@ -148,13 +158,19 @@ CXChildVisitResult CallChainParser::parse(const CXCursor &theCursor, const CXCur
 	  stringstream s;
 	  s << "Counted to " << calls << " calls in a chain. Threshold value is " << maxCCCount << ".";
 	  w->addWarning(theCursor, theData->getNode()->getArg("name"), s.str());
+	  Debug::print(20, "Logged Warning");
 	}
 
 	
 	// Remove this string from all the rest that it is a part of
 	for(list<CallChainTokenList*>::iterator i=myList.begin(); i!=myList.end(); i++) {
 	  if ((*i)->isWithin(t)) {
-	    (*i)->myTokens=(*i)->myTokens.erase((*i)->myTokens.rfind(t->myTokens), t->myTokens.length());
+	    size_t pos=(*i)->myTokens.rfind(t->myTokens);
+	    Debug::print(20, (string) "Deleting:" + t->myTokens + " from " + (*i)->myTokens);
+	    if (pos!=string::npos) {
+	      (*i)->myTokens=(*i)->myTokens.erase(pos, t->myTokens.length());
+	      Debug::print(20, "deleted");
+	    }
 	  }
 	}
       }

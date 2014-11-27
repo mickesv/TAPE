@@ -10,7 +10,7 @@
 #include "parser.hh"
 #include "model.hh"
 #include "debug.hh"
-
+#include "warnings.hh"
 
 void VariableAccessParser::startFunction(Model &theModel, ModelNode* theFunction, ParserData* theData)
 {
@@ -60,7 +60,21 @@ void VariableAccessParser::endFunction(Model &theModel, ModelNode* theFunction, 
   }
   
   // Add nodes to model
+  int maxAttributeUsage=myConfig->getInt("maxAttributeUsage");
   for(vector<VariableAccessNode*>::iterator i=myUsages.begin(); i!=myUsages.end(); i++) {    
+    // Throw a warning if accessed attribute too often
+    string cs=(*i)->getArg("count");
+    int count=atoi(cs.c_str());
+    if (count>maxAttributeUsage) {
+      Warnings* w=Warnings::getInstance();
+      
+      stringstream s;
+      s << "Attribute " << (*i)->getArg("name")
+	<< " accessed " << count << " times. Threshold value is " << maxAttributeUsage << ".";
+      w->addWarning(theData->getNode()->getArg("name"), s.str());
+      Debug::print(20, "Logged Warning");      
+    }
+
     myModelPtr->add(*i);
   }
 
@@ -76,7 +90,7 @@ CXChildVisitResult VariableAccessParser::parse(const CXCursor &theCursor, const 
     string name=clang_getCString(clang_getCursorDisplayName(theCursor));
     string calledParent=clang_getCString(clang_getCursorDisplayName(clang_getCursorSemanticParent(clang_getCursorReferenced(theCursor))));
     
-    Debug::print(10, (string) "   Looking for AttributeAccess " +name + ":" + calledParent);
+    Debug::print(10, (string) "   AttributeAccess " +name + ":" + calledParent);
 
     set<ModelNode*>* nodes=myModelPtr->getNodes();
     myModelPtr->filterByType(*nodes,AttributeNode::t());

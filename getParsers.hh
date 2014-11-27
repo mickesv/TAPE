@@ -66,6 +66,7 @@ void getParsers(set<Parser*> &theParsers, Model &theModel, Config &theConfig)
       theParsers.insert(new VariableAccessParser(theConfig));
     }
 
+    
   }    
 }
 

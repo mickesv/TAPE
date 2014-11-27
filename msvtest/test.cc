@@ -5,8 +5,9 @@
 
 int aGlobalVariable=10;
 int aGlobalVariable2=10;
+class myClass;
 
-struct tttt {
+/*struct tttt {
   int r; 
 };
 
@@ -41,12 +42,8 @@ void xbar(void)
   q.v=10;
   xxbar();
 }
-
-void bar(void)
-{
-  //  xbar();
-}
-
+*/
+/*
 int foo(void)
 {
   int q[3]={1,2,3};
@@ -75,14 +72,13 @@ int woo(int shoo, char q, double w, int* p, int e)
   return 1;
 }
 
-class myClass;
-
+*/
 class myClass {
  public:
   myClass() { // This ought to create a stack overflow! :-)
     c=new myClass();
   }
-  int qwoo(int w) {
+/*  int qwoo(int w) {
     qq=1;
     return 1;
   };
@@ -101,12 +97,13 @@ class myClass {
   myClass* ff(int x) {
     return new myClass();
   }
-
+*/
 
   int qq;
   myClass* c;
 };
 
+/*
 class mySubClass : public myClass {
  public:
   int qwww() {
@@ -115,6 +112,25 @@ class mySubClass : public myClass {
     return 1;
   };
 };
+*/
+
+
+void bar(void)
+{
+  //  xbar();
+  myClass theC;
+  myClass *fooPtr;
+  theC.c=0;
+  
+  if (theC.c == 0) {};
+  for (int i = 0; fooPtr != theC.c; i++) {  // Why is not the conditional part even evaluated?
+    theC.c=0;
+  }
+
+  theC.c=0;
+  theC.c=fooPtr;
+  return;
+}
 
 
 int main(void)

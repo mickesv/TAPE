@@ -70,7 +70,22 @@ void AttributeAccessParser::endFunction(Model &theModel, ModelNode* theFunction,
   }
   
   // Add nodes to model
-  for(vector<AttributeAccessNode*>::iterator i=myUsages.begin(); i!=myUsages.end(); i++) {    
+  int maxAttributeUsage=myConfig.get("maxAttributeUsage");
+  for(vector<AttributeAccessNode*>::iterator i=myUsages.begin(); i!=myUsages.end(); i++) {
+
+    // Throw a warning if accessed attribute too often
+    string cs=base->getArg("count");
+    int count=atoi(cs.c_str());
+    if (count>maxAttributeUsage) {
+      Warnings* w=Warnings::getInstance();
+      
+      stringstream s;
+      s << "Attribute accessed " << count << " times. Threshold value is " << maxAttributeUsage << ".";
+      w->addWarning(theCursor, theData->getNode()->getArg("name"), s.str());
+      Debug::print(20, "Logged Warning");
+
+    }
+
     myModelPtr->add(*i);
   }
 

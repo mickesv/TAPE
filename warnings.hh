@@ -10,8 +10,10 @@ class Warnings
 public:
   static Warnings* getInstance();
   static void initialise(Config &theConfig);
+  static int summarise();
   
   void addWarning(const CXCursor &theCursor, const string theFunctionName, const string theWarning);
+  void addWarning(const string &theFunctionName, const string &theWarning);
   
 protected:
   Warnings(Config &theConfig);
@@ -19,7 +21,9 @@ protected:
 private:
 
   static Warnings* myInstance;
+  static int myWarningsCount;
   Config* myConfig;
+
   
 };
 
