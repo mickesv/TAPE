@@ -1,0 +1,17 @@
+*.o
+gawk.csv
+out.txt
+msvtest.csv
+gawk.dot
+msvtest.dot
+msvtest2.dot
+this.dot
+thisFull.dot
+tool_presentation.pdf
+FTopLevel.dot
+FTopLevel.pdf
+thisFull.csv
+thisFull.pdf
+/codeext
+/granalyse
+/grmaker
